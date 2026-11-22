@@ -488,7 +488,10 @@
 
   /* Desktop spacious mode when touch controls are hidden */
   .stage.no-deck .canvas-frame {
-    height: min(74dvh, calc((100vw - 48px) * 0.9));
+    /* Size by width (capped by the 560px shell, the window and 74% of the
+       height) and let aspect-ratio pick the height, so it stays 10:9. */
+    height: auto;
+    width: min(536px, calc(100vw - 48px), calc(74dvh * 10 / 9));
   }
 
   /* Menu modal / drawer */
