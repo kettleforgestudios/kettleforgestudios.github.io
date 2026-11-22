@@ -45,6 +45,8 @@
   .grid .card { margin: 0; }
   h3 { margin: 0 0 6px; font-size: 18px; color: var(--gold); }
   a { color: var(--gold); }
+  .try { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .small { font-size: 13px; margin-top: 8px; }
   a.play {
     display: inline-block; font-weight: 700; text-decoration: none;
     color: var(--bg); background: var(--gold);
@@ -89,18 +91,14 @@
       <p>A 2.5D retro game player for Android. Kernelcade pops classic 2D game
         worlds apart into layers of depth, with tilt and parallax you can feel.
         It plays your own game files. Coming to Google Play.</p>
-    </div>
-  </section>
-
-  <!-- Our own original game, playable in the browser (play.html, served at /play) -->
-  <section class="card app">
-    <div>
-      <span class="pill">Play free in your browser</span>
-      <h2>Kernel Drop</h2>
-      <p>Steer a little rain cloud and water each seed just right. The first
-        Kettle Classics game, starring Kip. Works on phones (add it to your
-        home screen) and computers.</p>
-      <p style="margin-top:14px;"><a class="play" href="/play">&#9654; Play Kernel Drop</a></p>
+      <!-- Sample game: Kernel Drop ships built into Kernelcade; the browser
+           version (play.html, served at /play) is the plain 2D game. -->
+      <div class="try">
+        <p><strong>Try a game now:</strong> <em>Kernel Drop</em>, our own original
+          game that comes built into Kernelcade, plays free in your browser.</p>
+        <p style="margin-top:12px;"><a class="play" href="/play">&#9654; Play Kernel Drop</a></p>
+        <p class="muted small">The browser version is 2D; the Android app adds depth.</p>
+      </div>
     </div>
   </section>
 
