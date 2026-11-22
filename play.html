@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Kernelcade Pocket — Kettle Forge Studios</title>
+<meta name="description" content="Play Kernel Drop or your own .gb and .gbc files right in the browser. Pocket and Pocket Color web player by Kettle Forge Studios.">
+<meta name="theme-color" content="#14090A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kernelcade">
+<link rel="manifest" href="assets/play/manifest.webmanifest">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="kernelcade-icon.png">
+<style>
+  :root {
+    --bg: #14090A;
+    --surface: #241113;
+    --surface2: #31171A;
+    --bezel: #1B0D0F;
+    --line: #3D1E22;
+    --red: #DC141E;
+    --red-dark: #9B0D14;
+    --gold: #FFC933;
+    --text: #FFF7EC;
+    --dim: #C99B9B;
+    --pad-bg: #2A1417;
+    --pad-edge: #4B252A;
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.35 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    overscroll-behavior: none;
+  }
+
+  .app {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    background: radial-gradient(circle at 50% 0%, #2a1215 0%, var(--bg) 58%);
+  }
+
+  /* Top status bar */
+  .topbar {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+    background: rgba(20, 9, 10, 0.9);
+  }
+
+  .brand-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .brand-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 8px rgba(220, 20, 30, 0.75);
+    flex: none;
+  }
+  .brand-dot.paused {
+    background: var(--dim);
+    box-shadow: none;
+  }
+
+  .rom-name {
+    font-weight: 700;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: .01em;
+  }
+
+  .sys-badge {
+    flex: none;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--bg);
+    background: var(--gold);
+    padding: 2px 7px;
+    border-radius: 99px;
+  }
+
+  .top-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: none;
+  }
+
+  .icon-btn {
+    appearance: none;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 10px;
+    height: 36px;
+    min-width: 36px;
+    padding: 0 10px;
+    font: 600 13px/1 inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .icon-btn:active, .icon-btn.active {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: var(--surface2);
+  }
+
+  /* Main body: screen + handheld deck */
+  .stage {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px 12px;
+    gap: 10px;
+  }
+
+  .screen-shell {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    max-width: 560px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .bezel {
+    position: relative;
+    background: var(--bezel);
+    border: 2px solid var(--line);
+    border-radius: 16px;
+    padding: 10px 10px 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 247, 236, 0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .canvas-frame {
+    position: relative;
+    aspect-ratio: 10 / 9;
+    height: min(44dvh, calc((100vw - 48px) * 0.9));
+    max-height: 100%;
+    max-width: 100%;
+    background: #0d120c;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
+
+  canvas#screen {
+    width: 100%;
+    height: 100%;
+    display: block;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
+    touch-action: none;
+  }
+
+  .bezel-label {
+    margin-top: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--dim);
+    opacity: .85;
+  }
+  .bezel-label span {
+    color: var(--gold);
+  }
+
+  .audio-hint {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(20, 9, 10, 0.88);
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 5px 12px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none;
+    transition: opacity .2s ease;
+  }
+  .audio-hint.hidden {
+    opacity: 0;
+  }
+
+  /* Toast notification */
+  .toast {
+    position: fixed;
+    top: calc(env(safe-area-inset-top) + 56px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    background: var(--surface2);
+    border: 1px solid var(--gold);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 40;
+    max-width: calc(100vw - 32px);
+    text-align: center;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Touch controller deck */
+  .deck {
+    flex: none;
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 4px 4px 6px;
+    touch-action: none;
+  }
+  .deck.hidden {
+    display: none;
+  }
+
+  .deck-main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 4px;
+  }
+
+  /* Slide-capable D-pad */
+  .dpad-zone {
+    position: relative;
+    width: 152px;
+    height: 152px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(58, 28, 31, 0.35) 0%, rgba(20, 9, 10, 0) 72%);
+    touch-action: none;
+    flex: none;
+  }
+
+  .dpad-arm {
+    position: absolute;
+    background: var(--pad-bg);
+    border: 2px solid var(--pad-edge);
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45);
+    pointer-events: none;
+    transition: background .05s, border-color .05s;
+  }
+  .dpad-up {
+    left: 51px; top: 8px; width: 50px; height: 50px;
+    border-radius: 10px 10px 0 0; border-bottom: 0;
+  }
+  .dpad-down {
+    left: 51px; bottom: 8px; width: 50px; height: 50px;
+    border-radius: 0 0 10px 10px; border-top: 0;
+  }
+  .dpad-left {
+    top: 51px; left: 8px; width: 50px; height: 50px;
+    border-radius: 10px 0 0 10px; border-right: 0;
+  }
+  .dpad-right {
+    top: 51px; right: 8px; width: 50px; height: 50px;
+    border-radius: 0 10px 10px 0; border-left: 0;
+  }
+  .dpad-center {
+    position: absolute;
+    left: 51px; top: 51px; width: 50px; height: 50px;
+    background: var(--pad-bg);
+    pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .dpad-center::after {
+    content: "";
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: #1C0D0F;
+    border: 1px solid var(--pad-edge);
+  }
+  .dpad-arm::after {
+    content: "";
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    border: 6px solid transparent;
+  }
+  .dpad-up::after    { border-bottom-color: var(--dim); margin-top: -3px; }
+  .dpad-down::after  { border-top-color: var(--dim); margin-top: 3px; }
+  .dpad-left::after  { border-right-color: var(--dim); margin-left: -3px; }
+  .dpad-right::after { border-left-color: var(--dim); margin-left: 3px; }
+
+  .dpad-arm.pressed {
+    background: #472125;
+    border-color: var(--gold);
+  }
+  .dpad-up.pressed::after    { border-bottom-color: var(--gold); }
+  .dpad-down.pressed::after  { border-top-color: var(--gold); }
+  .dpad-left.pressed::after  { border-right-color: var(--gold); }
+  .dpad-right.pressed::after { border-left-color: var(--gold); }
+
+  /* A / B action pad */
+  .ab-zone {
+    position: relative;
+    width: 154px;
+    height: 132px;
+    touch-action: none;
+    flex: none;
+  }
+
+  .ab-btn {
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #EE2A34, var(--red) 62%, var(--red-dark));
+    border: 2px solid #FF6A70;
+    box-shadow: 0 5px 0 #64070C, 0 8px 18px rgba(0, 0, 0, 0.45);
+    color: var(--text);
+    font: 800 20px/1 inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    transition: transform .05s, box-shadow .05s, border-color .05s;
+  }
+  .ab-btn.b-btn { left: 6px; bottom: 8px; }
+  .ab-btn.a-btn { right: 6px; top: 8px; }
+
+  .ab-btn.pressed {
+    transform: translateY(3px) scale(0.96);
+    box-shadow: 0 2px 0 #64070C, 0 0 14px rgba(255, 201, 51, 0.55);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* Select / Start pills */
+  .deck-meta {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    padding-bottom: 2px;
+  }
+
+  .pill-btn {
+    appearance: none;
+    min-width: 78px;
+    height: 30px;
+    border-radius: 99px;
+    background: var(--pad-bg);
+    border: 2px solid var(--pad-edge);
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
+    color: var(--dim);
+    font: 700 11px/1 inherit;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    touch-action: none;
+    cursor: pointer;
+    transform: rotate(-10deg);
+  }
+  .pill-btn.pressed {
+    transform: rotate(-10deg) translateY(2px);
+    border-color: var(--gold);
+    color: var(--gold);
+    background: #472125;
+  }
+
+  /* Landscape phone layout */
+  @media (orientation: landscape) and (max-height: 540px) {
+    .topbar {
+      padding: 4px 10px;
+    }
+    .icon-btn {
+      height: 30px;
+      min-width: 30px;
+      font-size: 12px;
+    }
+    .stage {
+      flex-direction: row;
+      justify-content: center;
+      padding: 6px 10px;
+      gap: 10px;
+    }
+    .screen-shell {
+      order: 2;
+      flex: 0 1 auto;
+      height: 100%;
+    }
+    .bezel {
+      padding: 6px 8px;
+      height: 100%;
+      justify-content: center;
+    }
+    .bezel-label {
+      display: none;
+    }
+    .canvas-frame {
+      height: calc(100dvh - 64px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      width: auto;
+    }
+    .deck {
+      position: fixed;
+      inset: 42px env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      max-width: none;
+      pointer-events: none;
+      justify-content: space-between;
+      padding: 12px 16px 8px;
+    }
+    .deck-main, .deck-meta {
+      pointer-events: none;
+    }
+    .dpad-zone, .ab-zone, .pill-btn {
+      pointer-events: auto;
+    }
+    .deck-main {
+      flex: 1;
+      align-items: center;
+    }
+    .deck-meta {
+      justify-content: space-between;
+      padding: 0 28px;
+    }
+  }
+
+  /* Desktop spacious mode when touch controls are hidden */
+  .stage.no-deck .canvas-frame {
+    height: min(74dvh, calc((100vw - 48px) * 0.9));
+  }
+
+  /* Menu modal / drawer */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 3, 4, 0.76);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .18s ease;
+  }
+  .modal-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .sheet {
+    width: 100%;
+    max-width: 540px;
+    max-height: 86dvh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-bottom: 0;
+    border-radius: 20px 20px 0 0;
+    padding: 18px 18px calc(22px + env(safe-area-inset-bottom));
+    box-shadow: 0 -10px 36px rgba(0, 0, 0, 0.65);
+    transform: translateY(18px);
+    transition: transform .18s ease;
+  }
+  .modal-backdrop.open .sheet {
+    transform: translateY(0);
+  }
+
+  @media (min-width: 640px) {
+    .modal-backdrop {
+      align-items: center;
+      padding: 20px;
+    }
+    .sheet {
+      border-bottom: 1px solid var(--line);
+      border-radius: 20px;
+      padding-bottom: 20px;
+    }
+  }
+
+  .sheet-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .sheet-head h2 {
+    margin: 0;
+    font-size: 18px;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+  }
+  .sheet-head h2 span { color: var(--gold); }
+
+  .group {
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .group:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+  .group-title {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .btn-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .btn-grid.one {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-btn {
+    appearance: none;
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 11px 12px;
+    font: 600 14px/1.2 inherit;
+    text-align: center;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .menu-btn:active {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .menu-btn.primary {
+    background: var(--gold);
+    color: var(--bg);
+    border-color: var(--gold);
+  }
+  .menu-btn.danger {
+    border-color: #6b2227;
+    color: #ffb8bc;
+  }
+
+  .note {
+    margin: 8px 0 0;
+    font-size: 12.5px;
+    color: var(--dim);
+    line-height: 1.45;
+  }
+  .note a {
+    color: var(--gold);
+  }
+  .note code {
+    background: var(--bg);
+    padding: 1px 5px;
+    border-radius: 5px;
+    color: var(--text);
+    font-size: 12px;
+  }
+
+  .drop-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 9, 10, 0.88);
+    border: 3px dashed var(--gold);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 60;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--gold);
+    pointer-events: none;
+  }
+  .drop-overlay.show {
+    display: flex;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand-title">
+      <span class="brand-dot" id="statusDot" aria-hidden="true"></span>
+      <span class="rom-name" id="romTitle">Loading…</span>
+      <span class="sys-badge" id="sysBadge">Pocket</span>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" id="btnAudio" type="button" aria-label="Toggle sound" title="Mute / Unmute (M)">
+        <span id="audioIcon">Sound</span>
+      </button>
+      <button class="icon-btn" id="btnPause" type="button" aria-label="Pause or resume" title="Pause (P)">Pause</button>
+      <button class="icon-btn" id="btnMenu" type="button" aria-label="Open menu">Menu</button>
+    </div>
+  </header>
+
+  <main class="stage" id="stage">
+    <div class="screen-shell">
+      <div class="bezel">
+        <div class="canvas-frame">
+          <canvas id="screen" width="160" height="144"></canvas>
+        </div>
+        <div class="bezel-label">Kernelcade <span>Pocket</span></div>
+        <div class="audio-hint" id="audioHint">Tap anywhere to unlock audio</div>
+      </div>
+    </div>
+
+    <section class="deck" id="deck" aria-label="Handheld controls">
+      <div class="deck-main">
+        <div class="dpad-zone" id="dpadZone" aria-label="Directional pad">
+          <div class="dpad-arm dpad-up" id="dpUp"></div>
+          <div class="dpad-arm dpad-down" id="dpDown"></div>
+          <div class="dpad-arm dpad-left" id="dpLeft"></div>
+          <div class="dpad-arm dpad-right" id="dpRight"></div>
+          <div class="dpad-center"></div>
+        </div>
+
+        <div class="ab-zone" id="abZone" aria-label="Action buttons">
+          <div class="ab-btn b-btn" id="btnB">B</div>
+          <div class="ab-btn a-btn" id="btnA">A</div>
+        </div>
+      </div>
+
+      <div class="deck-meta">
+        <button class="pill-btn" id="btnSelect" type="button">Select</button>
+        <button class="pill-btn" id="btnStart" type="button">Start</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Hidden file inputs: omit `accept` so iOS Safari Files app never grays out .gb / .gbc / .sav -->
+<input type="file" id="romInput" hidden>
+<input type="file" id="savInput" hidden>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="drop-overlay" id="dropOverlay">Drop .gb or .gbc ROM to play</div>
+
+<div class="modal-backdrop" id="menuBackdrop" role="dialog" aria-modal="true" aria-labelledby="menuTitle">
+  <div class="sheet">
+    <div class="sheet-head">
+      <h2 id="menuTitle">Kernelcade <span>Pocket</span></h2>
+      <button class="icon-btn" id="btnCloseMenu" type="button">Done</button>
+    </div>
+
+    <div class="group">
+      <h3 class="group-title">Cartridge</h3>
+      <div class="btn-grid">
+        <button class="menu-btn primary" id="btnOpenRom" type="button">Open .gb / .gbc</button>
+        <button class="menu-btn" id="btnLoadBuiltIn" type="button">Play Kernel Drop</button>
+      </div>
+      <div class="btn-grid one" style="margin-top:8px;">
+        <button class="menu-btn danger" id="btnReset" type="button">Reset System</button>
+      </div>
+      <p class="note">ROMs load 100% locally in your browser and are never uploaded anywhere.</p>
+    </div>
+
+    <div class="group">
+      <h3 class="group-title">Quick Save State</h3>
+      <div class="btn-grid">
+        <button class="menu-btn" id="btnQuickSave" type="button">Quick Save (F5)</button>
+        <button class="menu-btn" id="btnQuickLoad" type="button">Quick Load (F8)</button>
+      </div>
+      <p class="note" id="stateStatus">Saved per cartridge in local browser storage.</p>
+    </div>
+
+    <div class="group">
+      <h3 class="group-title">Battery Save (.sav)</h3>
+      <div class="btn-grid">
+        <button class="menu-btn" id="btnExportSav" type="button">Export .sav</button>
+        <button class="menu-btn" id="btnImportSav" type="button">Import .sav</button>
+      </div>
+      <p class="note" id="savStatus">Battery RAM auto-saves locally to IndexedDB.</p>
+    </div>
+
+    <div class="group">
+      <h3 class="group-title">Controls</h3>
+      <div class="btn-grid one">
+        <button class="menu-btn" id="btnToggleDeck" type="button">Hide On-Screen Controls</button>
+      </div>
+      <p class="note">
+        <strong>Keyboard:</strong> Arrows / <code>WASD</code> D-pad &middot; <code>X</code>/<code>K</code> A &middot; <code>Z</code>/<code>J</code> B &middot; <code>Enter</code> Start &middot; <code>Shift</code> Select &middot; <code>M</code> Mute &middot; <code>P</code> Pause.<br>
+        <strong>Bluetooth Gamepad:</strong> D-pad or left stick, right face button = A, bottom face button = B, Start / Select.
+      </p>
+    </div>
+
+    <div class="group">
+      <h3 class="group-title">About &amp; Open-Source Notice</h3>
+      <p class="note">
+        <strong>Kernelcade Pocket</strong> is a clean-room Pocket &amp; Pocket Color web player by
+        <a href="/">Kettle Forge Studios</a>. Powered by <strong>SameBoy v1.0.5</strong>
+        (Expat/MIT License, &copy; Lior Halphon) with open-source MIT boot ROMs compiled to WebAssembly.
+      </p>
+      <p class="note">
+        Kernelcade is not affiliated with or endorsed by any video game console maker.
+        <a href="/privacy">Privacy Policy</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script src="assets/play/pocket.js"></script>
+<script>
+(() => {
+  'use strict';
+
+  // Button bitmask matching web/gb_wasm.cpp (p16::btn)
+  const BTN = {
+    B:      1 << 0,
+    SELECT: 1 << 2,
+    START:  1 << 3,
+    UP:     1 << 4,
+    DOWN:   1 << 5,
+    LEFT:   1 << 6,
+    RIGHT:  1 << 7,
+    A:      1 << 8,
+  };
+
+  const BUILTIN_ROM_URL = 'assets/play/kernel-drop.gb';
+  const BUILTIN_ROM_NAME = 'Kernel Drop';
+  const DB_NAME = 'kettlecade_pocket_v1';
+  const DB_VERSION = 1;
+  const MIN_ROM_BYTES = 0x4000;
+  const MAX_ROM_BYTES = 8 * 1024 * 1024;
+
+  // DOM elements
+  const canvas = document.getElementById('screen');
+  const ctx2d = canvas.getContext('2d', { alpha: false });
+  const imgData = ctx2d.createImageData(160, 144);
+  const statusDot = document.getElementById('statusDot');
+  const romTitleEl = document.getElementById('romTitle');
+  const sysBadgeEl = document.getElementById('sysBadge');
+  const audioHintEl = document.getElementById('audioHint');
+  const btnAudio = document.getElementById('btnAudio');
+  const audioIconEl = document.getElementById('audioIcon');
+  const btnPause = document.getElementById('btnPause');
+  const btnMenu = document.getElementById('btnMenu');
+  const menuBackdrop = document.getElementById('menuBackdrop');
+  const btnCloseMenu = document.getElementById('btnCloseMenu');
+  const romInput = document.getElementById('romInput');
+  const savInput = document.getElementById('savInput');
+  const toastEl = document.getElementById('toast');
+  const dropOverlay = document.getElementById('dropOverlay');
+  const stageEl = document.getElementById('stage');
+  const deckEl = document.getElementById('deck');
+  const btnToggleDeck = document.getElementById('btnToggleDeck');
+  const savStatusEl = document.getElementById('savStatus');
+  const stateStatusEl = document.getElementById('stateStatus');
+
+  const dpUp = document.getElementById('dpUp');
+  const dpDown = document.getElementById('dpDown');
+  const dpLeft = document.getElementById('dpLeft');
+  const dpRight = document.getElementById('dpRight');
+  const dpadZone = document.getElementById('dpadZone');
+  const abZone = document.getElementById('abZone');
+  const btnBEl = document.getElementById('btnB');
+  const btnAEl = document.getElementById('btnA');
+  const btnSelectEl = document.getElementById('btnSelect');
+  const btnStartEl = document.getElementById('btnStart');
+
+  // Emulator & app state
+  let mod = null;
+  let coreLoaded = false;
+  let paused = false;
+  let menuOpen = false;
+  let romKey = '';
+  let romDisplayName = BUILTIN_ROM_NAME;
+  let romSlug = 'kernel-drop';
+  let targetFps = 59.7275;
+  let coreAudioRate = 48000;
+  let lastBatterySig = '';
+  let lastBatteryCheckMs = 0;
+
+  // Input masks (OR'd each frame)
+  let touchDpadMask = 0;
+  let touchAbMask = 0;
+  let touchSelectCount = 0;
+  let touchStartCount = 0;
+  let keyMask = 0;
+
+  // Toast helper
+  let toastTimer = null;
+  function showToast(msg, ms = 2200) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), ms);
+  }
+
+  // IndexedDB wrapper for .sav battery RAM & quick save states
+  let dbPromise = null;
+  function openDB() {
+    if (dbPromise) return dbPromise;
+    dbPromise = new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains('saves')) db.createObjectStore('saves');
+        if (!db.objectStoreNames.contains('states')) db.createObjectStore('states');
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+    return dbPromise;
+  }
+
+  async function idbGet(store, key) {
+    try {
+      const db = await openDB();
+      return await new Promise((resolve, reject) => {
+        const tx = db.transaction(store, 'readonly');
+        const req = tx.objectStore(store).get(key);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => reject(req.error);
+      });
+    } catch {
+      return null;
+    }
+  }
+
+  async function idbPut(store, key, val) {
+    try {
+      const db = await openDB();
+      return await new Promise((resolve, reject) => {
+        const tx = db.transaction(store, 'readwrite');
+        const req = tx.objectStore(store).put(val, key);
+        req.onsuccess = () => resolve(true);
+        req.onerror = () => reject(req.error);
+      });
+    } catch {
+      return false;
+    }
+  }
+
+  // Fast 64-bit FNV-1a-like fingerprint of ROM bytes for save slot isolation
+  function hashBytes(bytes) {
+    let h1 = 0x811c9dc5;
+    let h2 = 0x9e3779b9;
+    const step = bytes.length > 65536 ? 4 : 1;
+    for (let i = 0; i < bytes.length; i += step) {
+      const b = bytes[i];
+      h1 = Math.imul(h1 ^ b, 0x01000193) >>> 0;
+      h2 = Math.imul(h2 ^ ((b + i) & 0xff), 0x85ebca6b) >>> 0;
+    }
+    return (
+      bytes.length.toString(16) + '_' +
+      h1.toString(16).padStart(8, '0') +
+      h2.toString(16).padStart(8, '0')
+    );
+  }
+
+  function extractHeaderTitle(bytes) {
+    if (bytes.length < 0x150) return '';
+    let out = '';
+    for (let i = 0x134; i <= 0x142; i++) {
+      const c = bytes[i];
+      if (c === 0) break;
+      if (c >= 0x20 && c <= 0x7e) out += String.fromCharCode(c);
+    }
+    return out.trim();
+  }
+
+  function slugify(name) {
+    return (name || 'cartridge')
+      .replace(/\.[^.]+$/, '')
+      .replace(/[^a-zA-Z0-9_-]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .toLowerCase() || 'cartridge';
+  }
+
+  // 48 kHz Web Audio (iOS Safari first-tap unlock + lookahead scheduled buffers)
+  let audioCtx = null;
+  let audioGain = null;
+  let audioUnlocked = false;
+  let muted = false;
+  let nextAudioTime = 0;
+
+  function updateAudioUI() {
+    if (muted) {
+      audioIconEl.textContent = 'Muted';
+      btnAudio.classList.add('active');
+      audioHintEl.classList.add('hidden');
+    } else {
+      audioIconEl.textContent = audioUnlocked ? 'Sound' : 'Sound';
+      btnAudio.classList.remove('active');
+      audioHintEl.classList.toggle('hidden', audioUnlocked);
+    }
+  }
+
+  function unlockAudio() {
+    if (muted) return;
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+
+    if (!audioCtx) {
+      try {
+        audioCtx = new AudioCtx({ sampleRate: coreAudioRate });
+      } catch {
+        audioCtx = new AudioCtx();
+      }
+      audioGain = audioCtx.createGain();
+      audioGain.gain.value = muted ? 0 : 0.85;
+      audioGain.connect(audioCtx.destination);
+      nextAudioTime = audioCtx.currentTime + 0.04;
+    }
+
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume().then(() => {
+        if (audioCtx.state === 'running') {
+          audioUnlocked = true;
+          nextAudioTime = audioCtx.currentTime + 0.04;
+          updateAudioUI();
+        }
+      }).catch(() => {});
+    }
+
+    if (!audioUnlocked) {
+      // Play a 1-sample silent buffer synchronously inside the user gesture to unlock iOS Safari audio
+      try {
+        const silent = audioCtx.createBuffer(1, 1, audioCtx.sampleRate);
+        const src = audioCtx.createBufferSource();
+        src.buffer = silent;
+        src.connect(audioCtx.destination);
+        src.start(0);
+      } catch {}
+      if (audioCtx.state === 'running') {
+        audioUnlocked = true;
+        nextAudioTime = audioCtx.currentTime + 0.04;
+        updateAudioUI();
+      }
+    }
+  }
+
+  function setMuted(val) {
+    muted = !!val;
+    if (audioGain && audioCtx) {
+      audioGain.gain.setTargetAtTime(muted ? 0 : 0.85, audioCtx.currentTime, 0.015);
+    }
+    if (!muted) unlockAudio();
+    updateAudioUI();
+  }
+
+  function queueAudioFromCore() {
+    if (!audioCtx || !audioGain || muted || audioCtx.state !== 'running') return;
+    const frames = mod._kc_audio_frames();
+    if (frames <= 0) return;
+    const ptr = mod._kc_audio_ptr();
+    if (!ptr) return;
+
+    const now = audioCtx.currentTime;
+    // Keep audio latency tight (~35-110ms) and recover cleanly after pauses/stutters
+    if (nextAudioTime < now + 0.01) {
+      nextAudioTime = now + 0.045;
+    } else if (nextAudioTime > now + 0.16) {
+      // Drop excess buffered audio if clock drifted ahead
+      return;
+    }
+
+    const buf = audioCtx.createBuffer(2, frames, coreAudioRate);
+    const left = buf.getChannelData(0);
+    const right = buf.getChannelData(1);
+    const heap16 = mod.HEAP16;
+    const base = ptr >> 1;
+    const inv = 1 / 32768;
+
+    for (let i = 0; i < frames; i++) {
+      left[i] = heap16[base + i * 2] * inv;
+      right[i] = heap16[base + i * 2 + 1] * inv;
+    }
+
+    const src = audioCtx.createBufferSource();
+    src.buffer = buf;
+    src.connect(audioGain);
+    src.start(nextAudioTime);
+    nextAudioTime += frames / coreAudioRate;
+  }
+
+  // Wasm byte-copy helpers
+  function copyToWasm(bytes) {
+    const ptr = mod._kc_alloc(bytes.length);
+    if (!ptr) return 0;
+    mod.HEAPU8.set(bytes, ptr);
+    return ptr;
+  }
+
+  function readFromWasm(ptr, size) {
+    if (!ptr || size <= 0) return new Uint8Array(0);
+    return mod.HEAPU8.slice(ptr, ptr + size);
+  }
+
+  // Battery RAM (.sav) persistence
+  async function flushBatterySave(force = false) {
+    if (!mod || !coreLoaded || !romKey) return false;
+    const size = mod._kc_save_battery();
+    if (size <= 0) return false;
+    const bytes = readFromWasm(mod._kc_battery_ptr(), size);
+    const sig = hashBytes(bytes);
+    if (!force && sig === lastBatterySig) return false;
+    lastBatterySig = sig;
+    await idbPut('saves', romKey, bytes);
+    savStatusEl.textContent = 'Battery RAM auto-saved (' + (bytes.length / 1024).toFixed(1) + ' KB).';
+    return true;
+  }
+
+  async function restoreBatterySave() {
+    if (!mod || !coreLoaded || !romKey) return;
+    const saved = await idbGet('saves', romKey);
+    if (saved && saved.byteLength > 0) {
+      const bytes = saved instanceof Uint8Array ? saved : new Uint8Array(saved);
+      const ptr = copyToWasm(bytes);
+      if (ptr) {
+        const ok = mod._kc_load_battery(ptr, bytes.length);
+        mod._kc_free(ptr);
+        if (ok) {
+          lastBatterySig = hashBytes(bytes);
+          savStatusEl.textContent = 'Restored local battery save (' + (bytes.length / 1024).toFixed(1) + ' KB).';
+          return;
+        }
+      }
+    }
+    lastBatterySig = '';
+    savStatusEl.textContent = 'Battery RAM auto-saves locally to IndexedDB.';
+  }
+
+  async function loadRomBytes(bytes, label) {
+    if (!mod) return false;
+    if (!bytes || bytes.length < MIN_ROM_BYTES || bytes.length > MAX_ROM_BYTES) {
+      showToast('Invalid ROM file (expected 16 KB – 8 MB .gb/.gbc)');
+      return false;
+    }
+
+    // Flush previous cartridge battery before switching
+    if (coreLoaded) {
+      await flushBatterySave(true);
+    }
+
+    const ptr = copyToWasm(bytes);
+    if (!ptr) {
+      showToast('Out of memory loading ROM');
+      return false;
+    }
+    const ok = mod._kc_load_rom(ptr, bytes.length);
+    mod._kc_free(ptr);
+    if (!ok) {
+      showToast('Could not load ROM');
+      return false;
+    }
+
+    coreLoaded = true;
+    targetFps = mod._kc_frame_rate() || 59.7275;
+    coreAudioRate = mod._kc_audio_rate() || 48000;
+    const isColor = mod._kc_is_color() !== 0;
+
+    const headerTitle = extractHeaderTitle(bytes);
+    romDisplayName = label || headerTitle || 'Cartridge';
+    romSlug = slugify(romDisplayName);
+    romKey = 'rom_' + hashBytes(bytes);
+
+    romTitleEl.textContent = romDisplayName;
+    sysBadgeEl.textContent = isColor ? 'Pocket Color' : 'Pocket';
+
+    await restoreBatterySave();
+    const existingState = await idbGet('states', romKey);
+    stateStatusEl.textContent = existingState
+      ? 'Quick state ready for ' + romDisplayName + '.'
+      : 'Saved per cartridge in local browser storage.';
+
+    setPaused(false);
+    showToast('Loaded ' + romDisplayName);
+    return true;
+  }
+
+  async function loadBuiltInRom() {
+    try {
+      const resp = await fetch(BUILTIN_ROM_URL);
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const buf = await resp.arrayBuffer();
+      await loadRomBytes(new Uint8Array(buf), BUILTIN_ROM_NAME);
+    } catch (err) {
+      romTitleEl.textContent = 'Load failed';
+      showToast('Could not fetch built-in Kernel Drop ROM', 3500);
+      console.error(err);
+    }
+  }
+
+  // Quick Save / Load State
+  async function quickSave() {
+    if (!mod || !coreLoaded || !romKey) return;
+    const size = mod._kc_save_state();
+    if (size <= 0) {
+      showToast('Save state failed');
+      return;
+    }
+    const bytes = readFromWasm(mod._kc_state_ptr(), size);
+    const ok = await idbPut('states', romKey, bytes);
+    if (ok) {
+      stateStatusEl.textContent = 'Quick state saved (' + Math.round(bytes.length / 1024) + ' KB).';
+      showToast('Quick state saved');
+    } else {
+      showToast('Could not store save state');
+    }
+  }
+
+  async function quickLoad() {
+    if (!mod || !coreLoaded || !romKey) return;
+    const saved = await idbGet('states', romKey);
+    if (!saved) {
+      showToast('No quick state saved for this game');
+      return;
+    }
+    const bytes = saved instanceof Uint8Array ? saved : new Uint8Array(saved);
+    const ptr = copyToWasm(bytes);
+    if (!ptr) return;
+    const ok = mod._kc_load_state(ptr, bytes.length);
+    mod._kc_free(ptr);
+    if (ok) {
+      showToast('Quick state loaded');
+      closeMenu();
+    } else {
+      showToast('Save state incompatible');
+    }
+  }
+
+  // Export / Import .sav
+  function exportBatterySave() {
+    if (!mod || !coreLoaded) return;
+    const size = mod._kc_save_battery();
+    if (size <= 0) {
+      showToast('This cartridge has no battery save RAM');
+      return;
+    }
+    const bytes = readFromWasm(mod._kc_battery_ptr(), size);
+    const blob = new Blob([bytes], { type: 'application/octet-stream' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = romSlug + '.sav';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast('Exported ' + romSlug + '.sav');
+  }
+
+  async function importBatterySave(file) {
+    if (!mod || !coreLoaded || !file) return;
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    if (bytes.length === 0 || bytes.length > 512 * 1024) {
+      showToast('Invalid .sav file size');
+      return;
+    }
+    const ptr = copyToWasm(bytes);
+    if (!ptr) return;
+    const ok = mod._kc_load_battery(ptr, bytes.length);
+    mod._kc_free(ptr);
+    if (ok) {
+      lastBatterySig = hashBytes(bytes);
+      await idbPut('saves', romKey, bytes);
+      mod._kc_reset(1);
+      savStatusEl.textContent = 'Imported ' + file.name + ' (' + (bytes.length / 1024).toFixed(1) + ' KB).';
+      showToast('Imported ' + file.name + ' & reset');
+      closeMenu();
+    } else {
+      showToast('This cartridge does not use battery RAM');
+    }
+  }
+
+  // Pause & Menu controls
+  function setPaused(val) {
+    paused = !!val;
+    btnPause.textContent = paused ? 'Resume' : 'Pause';
+    btnPause.classList.toggle('active', paused);
+    statusDot.classList.toggle('paused', paused || menuOpen);
+    if (paused) flushBatterySave();
+  }
+
+  function openMenu() {
+    menuOpen = true;
+    menuBackdrop.classList.add('open');
+    statusDot.classList.add('paused');
+    flushBatterySave();
+  }
+
+  function closeMenu() {
+    menuOpen = false;
+    menuBackdrop.classList.remove('open');
+    statusDot.classList.toggle('paused', paused);
+    if (audioCtx && audioCtx.state === 'running') {
+      nextAudioTime = audioCtx.currentTime + 0.045;
+    }
+  }
+
+  // Multi-touch slide-capable D-pad
+  const dpadPointers = new Map();
+  function recomputeDpad() {
+    let mask = 0;
+    for (const m of dpadPointers.values()) mask |= m;
+    touchDpadMask = mask;
+    dpUp.classList.toggle('pressed', (mask & BTN.UP) !== 0);
+    dpDown.classList.toggle('pressed', (mask & BTN.DOWN) !== 0);
+    dpLeft.classList.toggle('pressed', (mask & BTN.LEFT) !== 0);
+    dpRight.classList.toggle('pressed', (mask & BTN.RIGHT) !== 0);
+  }
+
+  function dpadMaskForPoint(clientX, clientY) {
+    const rect = dpadZone.getBoundingClientRect();
+    const cx = rect.left + rect.width * 0.5;
+    const cy = rect.top + rect.height * 0.5;
+    const dx = clientX - cx;
+    const dy = clientY - cy;
+    const dist = Math.hypot(dx, dy);
+    if (dist < rect.width * 0.11) return 0;
+
+    // 8-way direction with comfortable diagonal zones
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+    let mask = 0;
+    if (angle > -67.5 && angle < 67.5) mask |= BTN.RIGHT;
+    if (angle > 112.5 || angle < -112.5) mask |= BTN.LEFT;
+    if (angle > 22.5 && angle < 157.5) mask |= BTN.DOWN;
+    if (angle < -22.5 && angle > -157.5) mask |= BTN.UP;
+    return mask;
+  }
+
+  dpadZone.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    unlockAudio();
+    try { dpadZone.setPointerCapture(e.pointerId); } catch {}
+    dpadPointers.set(e.pointerId, dpadMaskForPoint(e.clientX, e.clientY));
+    recomputeDpad();
+  }, { passive: false });
+
+  dpadZone.addEventListener('pointermove', (e) => {
+    if (!dpadPointers.has(e.pointerId)) return;
+    e.preventDefault();
+    dpadPointers.set(e.pointerId, dpadMaskForPoint(e.clientX, e.clientY));
+    recomputeDpad();
+  }, { passive: false });
+
+  function releaseDpadPointer(e) {
+    if (!dpadPointers.has(e.pointerId)) return;
+    dpadPointers.delete(e.pointerId);
+    recomputeDpad();
+  }
+  dpadZone.addEventListener('pointerup', releaseDpadPointer);
+  dpadZone.addEventListener('pointercancel', releaseDpadPointer);
+  dpadZone.addEventListener('lostpointercapture', releaseDpadPointer);
+
+  // Multi-touch slide-capable A/B pad (supports rolling thumb across B & A)
+  const abPointers = new Map();
+  function recomputeAb() {
+    let mask = 0;
+    for (const m of abPointers.values()) mask |= m;
+    touchAbMask = mask;
+    btnBEl.classList.toggle('pressed', (mask & BTN.B) !== 0);
+    btnAEl.classList.toggle('pressed', (mask & BTN.A) !== 0);
+  }
+
+  function abMaskForPoint(clientX, clientY) {
+    const rB = btnBEl.getBoundingClientRect();
+    const rA = btnAEl.getBoundingClientRect();
+    const dB = Math.hypot(clientX - (rB.left + rB.width * 0.5), clientY - (rB.top + rB.height * 0.5));
+    const dA = Math.hypot(clientX - (rA.left + rA.width * 0.5), clientY - (rA.top + rA.height * 0.5));
+    const rad = Math.max(rB.width, rA.width) * 0.68;
+    let mask = 0;
+    if (dB <= rad) mask |= BTN.B;
+    if (dA <= rad) mask |= BTN.A;
+    // Fallback: if inside zone but slightly outside circles, pick closer button
+    if (!mask) {
+      mask = dA < dB ? BTN.A : BTN.B;
+    }
+    return mask;
+  }
+
+  abZone.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    unlockAudio();
+    try { abZone.setPointerCapture(e.pointerId); } catch {}
+    abPointers.set(e.pointerId, abMaskForPoint(e.clientX, e.clientY));
+    recomputeAb();
+  }, { passive: false });
+
+  abZone.addEventListener('pointermove', (e) => {
+    if (!abPointers.has(e.pointerId)) return;
+    e.preventDefault();
+    abPointers.set(e.pointerId, abMaskForPoint(e.clientX, e.clientY));
+    recomputeAb();
+  }, { passive: false });
+
+  function releaseAbPointer(e) {
+    if (!abPointers.has(e.pointerId)) return;
+    abPointers.delete(e.pointerId);
+    recomputeAb();
+  }
+  abZone.addEventListener('pointerup', releaseAbPointer);
+  abZone.addEventListener('pointercancel', releaseAbPointer);
+  abZone.addEventListener('lostpointercapture', releaseAbPointer);
+
+  // Select / Start touch handlers
+  function bindPillButton(el, onCountChange) {
+    const active = new Set();
+    el.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      unlockAudio();
+      try { el.setPointerCapture(e.pointerId); } catch {}
+      active.add(e.pointerId);
+      el.classList.add('pressed');
+      onCountChange(active.size);
+    }, { passive: false });
+    const release = (e) => {
+      if (!active.delete(e.pointerId)) return;
+      if (active.size === 0) el.classList.remove('pressed');
+      onCountChange(active.size);
+    };
+    el.addEventListener('pointerup', release);
+    el.addEventListener('pointercancel', release);
+    el.addEventListener('lostpointercapture', release);
+  }
+  bindPillButton(btnSelectEl, (n) => { touchSelectCount = n; });
+  bindPillButton(btnStartEl, (n) => { touchStartCount = n; });
+
+  // First-tap unlock anywhere on the document for iOS Safari
+  window.addEventListener('pointerdown', unlockAudio, { passive: true });
+  window.addEventListener('touchstart', unlockAudio, { passive: true });
+
+  // Keyboard controls
+  const KEY_MAP = {
+    ArrowUp: BTN.UP, KeyW: BTN.UP,
+    ArrowDown: BTN.DOWN, KeyS: BTN.DOWN,
+    ArrowLeft: BTN.LEFT, KeyA: BTN.LEFT,
+    ArrowRight: BTN.RIGHT, KeyD: BTN.RIGHT,
+    KeyX: BTN.A, KeyK: BTN.A, Period: BTN.A,
+    KeyZ: BTN.B, KeyJ: BTN.B, Comma: BTN.B,
+    Enter: BTN.START,
+    ShiftRight: BTN.SELECT, ShiftLeft: BTN.SELECT, Backspace: BTN.SELECT,
+  };
+
+  window.addEventListener('keydown', (e) => {
+    unlockAudio();
+    if (e.code === 'Escape' && menuOpen) {
+      closeMenu();
+      return;
+    }
+    if (menuOpen) return;
+
+    if (e.code === 'KeyM') { e.preventDefault(); setMuted(!muted); return; }
+    if (e.code === 'KeyP') { e.preventDefault(); setPaused(!paused); return; }
+    if (e.code === 'F5')   { e.preventDefault(); quickSave(); return; }
+    if (e.code === 'F8')   { e.preventDefault(); quickLoad(); return; }
+
+    const bit = KEY_MAP[e.code];
+    if (bit) {
+      e.preventDefault();
+      keyMask |= bit;
+    }
+  });
+
+  window.addEventListener('keyup', (e) => {
+    const bit = KEY_MAP[e.code];
+    if (bit) {
+      e.preventDefault();
+      keyMask &= ~bit;
+    }
+  });
+
+  window.addEventListener('blur', () => {
+    keyMask = 0;
+  });
+
+  // Bluetooth Gamepad polling
+  function pollGamepads() {
+    if (!navigator.getGamepads) return 0;
+    const pads = navigator.getGamepads();
+    let mask = 0;
+    for (let i = 0; i < pads.length; i++) {
+      const gp = pads[i];
+      if (!gp || !gp.connected) continue;
+      const b = gp.buttons;
+      const ax0 = gp.axes[0] || 0;
+      const ax1 = gp.axes[1] || 0;
+
+      if ((b[12] && b[12].pressed) || ax1 < -0.35) mask |= BTN.UP;
+      if ((b[13] && b[13].pressed) || ax1 >  0.35) mask |= BTN.DOWN;
+      if ((b[14] && b[14].pressed) || ax0 < -0.35) mask |= BTN.LEFT;
+      if ((b[15] && b[15].pressed) || ax0 >  0.35) mask |= BTN.RIGHT;
+
+      // Right face button (1) or top (3) -> A; bottom face button (0) or left (2) -> B
+      if ((b[1] && b[1].pressed) || (b[3] && b[3].pressed)) mask |= BTN.A;
+      if ((b[0] && b[0].pressed) || (b[2] && b[2].pressed)) mask |= BTN.B;
+      if (b[8] && b[8].pressed) mask |= BTN.SELECT;
+      if (b[9] && b[9].pressed) mask |= BTN.START;
+    }
+    return mask;
+  }
+
+  // UI button wiring
+  btnAudio.addEventListener('click', () => setMuted(!muted));
+  btnPause.addEventListener('click', () => setPaused(!paused));
+  btnMenu.addEventListener('click', openMenu);
+  btnCloseMenu.addEventListener('click', closeMenu);
+  menuBackdrop.addEventListener('click', (e) => {
+    if (e.target === menuBackdrop) closeMenu();
+  });
+
+  document.getElementById('btnOpenRom').addEventListener('click', () => {
+    romInput.value = '';
+    romInput.click();
+  });
+  romInput.addEventListener('change', async () => {
+    const file = romInput.files && romInput.files[0];
+    if (!file) return;
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const prettyName = file.name.replace(/\.(gb|gbc)$/i, '');
+    if (await loadRomBytes(bytes, prettyName)) {
+      closeMenu();
+    }
+  });
+
+  document.getElementById('btnLoadBuiltIn').addEventListener('click', async () => {
+    await loadBuiltInRom();
+    closeMenu();
+  });
+
+  document.getElementById('btnReset').addEventListener('click', () => {
+    if (!mod || !coreLoaded) return;
+    mod._kc_reset(1);
+    showToast('System reset');
+    closeMenu();
+  });
+
+  document.getElementById('btnQuickSave').addEventListener('click', quickSave);
+  document.getElementById('btnQuickLoad').addEventListener('click', quickLoad);
+  document.getElementById('btnExportSav').addEventListener('click', exportBatterySave);
+  document.getElementById('btnImportSav').addEventListener('click', () => {
+    savInput.value = '';
+    savInput.click();
+  });
+  savInput.addEventListener('change', async () => {
+    const file = savInput.files && savInput.files[0];
+    if (file) await importBatterySave(file);
+  });
+
+  // On-screen controls toggle (visible by default on touch devices, toggleable on desktop)
+  let deckVisible = true;
+  function setDeckVisible(vis) {
+    deckVisible = !!vis;
+    deckEl.classList.toggle('hidden', !deckVisible);
+    stageEl.classList.toggle('no-deck', !deckVisible);
+    btnToggleDeck.textContent = deckVisible ? 'Hide On-Screen Controls' : 'Show On-Screen Controls';
+  }
+  if (window.matchMedia && window.matchMedia('(pointer: fine) and (min-width: 900px)').matches) {
+    setDeckVisible(false);
+  }
+  btnToggleDeck.addEventListener('click', () => setDeckVisible(!deckVisible));
+
+  // Drag-and-drop ROM support on desktop
+  let dragDepth = 0;
+  window.addEventListener('dragenter', (e) => {
+    e.preventDefault();
+    dragDepth++;
+    dropOverlay.classList.add('show');
+  });
+  window.addEventListener('dragover', (e) => e.preventDefault());
+  window.addEventListener('dragleave', () => {
+    dragDepth = Math.max(0, dragDepth - 1);
+    if (dragDepth === 0) dropOverlay.classList.remove('show');
+  });
+  window.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    dragDepth = 0;
+    dropOverlay.classList.remove('show');
+    const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (!file) return;
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    await loadRomBytes(bytes, file.name.replace(/\.(gb|gbc)$/i, ''));
+  });
+
+  // Auto-save on background / pagehide
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      flushBatterySave();
+    } else if (audioCtx && audioCtx.state === 'running') {
+      nextAudioTime = audioCtx.currentTime + 0.045;
+    }
+  });
+  window.addEventListener('pagehide', () => { flushBatterySave(); });
+
+  // Main emulation loop (accumulator-paced to ~59.7275 Hz)
+  let lastTs = 0;
+  let accumMs = 0;
+
+  function renderFrame() {
+    const ptr = mod._kc_frame_ptr();
+    if (!ptr) return;
+    const bytes = mod.HEAPU8.subarray(ptr, ptr + 160 * 144 * 4);
+    imgData.data.set(bytes);
+    ctx2d.putImageData(imgData, 0, 0);
+  }
+
+  function tick(ts) {
+    requestAnimationFrame(tick);
+    if (!mod || !coreLoaded || paused || menuOpen || document.hidden) {
+      lastTs = ts;
+      return;
+    }
+
+    if (!lastTs) lastTs = ts;
+    const dt = Math.min(ts - lastTs, 50); // clamp to avoid spiral of death
+    lastTs = ts;
+    const frameMs = 1000 / targetFps;
+    accumMs += dt;
+
+    let steps = 0;
+    while (accumMs >= frameMs && steps < 3) {
+      let mask = touchDpadMask | touchAbMask | keyMask | pollGamepads();
+      if (touchSelectCount > 0) mask |= BTN.SELECT;
+      if (touchStartCount > 0) mask |= BTN.START;
+
+      mod._kc_set_buttons(mask);
+      mod._kc_run_frame();
+      queueAudioFromCore();
+      accumMs -= frameMs;
+      steps++;
+    }
+
+    if (steps > 0) {
+      renderFrame();
+    }
+
+    // Periodic battery RAM auto-save every 5 seconds
+    if (ts - lastBatteryCheckMs >= 5000) {
+      lastBatteryCheckMs = ts;
+      flushBatterySave();
+    }
+  }
+
+  // Boot Wasm core and auto-load Kernel Drop
+  async function boot() {
+    updateAudioUI();
+    try {
+      if (typeof createPocketCore !== 'function') {
+        throw new Error('pocket.js failed to load');
+      }
+      mod = await createPocketCore({
+        locateFile: (path) => 'assets/play/' + path,
+      });
+      mod._kc_init();
+      await loadBuiltInRom();
+      requestAnimationFrame(tick);
+    } catch (err) {
+      romTitleEl.textContent = 'Core load failed';
+      showToast('Could not initialize Pocket core', 4000);
+      console.error(err);
+    }
+  }
+
+  boot();
+})();
+</script>
+</body>
+</html>

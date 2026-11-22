@@ -1,0 +1,19 @@
+{
+  "name": "Kernelcade Pocket",
+  "short_name": "Kernelcade",
+  "description": "Pocket and Pocket Color web player by Kettle Forge Studios. Includes Kernel Drop and plays your own .gb and .gbc files.",
+  "start_url": "/play",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#14090A",
+  "theme_color": "#14090A",
+  "icons": [
+    {
+      "src": "/kernelcade-icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
