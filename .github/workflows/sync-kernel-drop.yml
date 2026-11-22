@@ -1,0 +1,66 @@
+# Keeps the browser copy of Kernel Drop (assets/play/kernel-drop.gb) in step with the game.
+#
+# The game's source lives in kettleforgestudios/kettle-classics. Its CI publishes every build
+# as the public "kernel-drop-latest" release. Once an hour (or when you press "Run workflow"
+# on the Actions tab) this downloads that ROM, checks it, and commits it here only if it changed.
+# Then it asks GitHub Pages to republish the site.
+name: Sync Kernel Drop
+
+on:
+  schedule:
+    - cron: "17 * * * *" # every hour, at 17 minutes past
+  workflow_dispatch:
+
+permissions:
+  contents: write # commit the new ROM
+  pages: write # ask Pages to rebuild
+
+concurrency:
+  group: sync-kernel-drop
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download the newest Kernel Drop ROM
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          REPO=kettleforgestudios/kettle-classics
+          # The file name changes every build (kernel-drop-build-N.gb), so look it up.
+          gh release download kernel-drop-latest -R "$REPO" --pattern 'kernel-drop-build-*.gb' --output new.gb --clobber
+          gh release view kernel-drop-latest -R "$REPO" --json body --jq .body
+
+      - name: Check it's a real, logo-free Pocket ROM
+        run: |
+          python3 - new.gb <<'EOF'
+          import sys
+          d = open(sys.argv[1], "rb").read()
+          assert len(d) >= 32768, "too small to be a ROM"
+          assert d[0x134:0x13F] == b"KERNEL DROP", "wrong title"
+          assert all(b == 0 for b in d[0x104:0x134]), "logo area must stay empty"
+          print("ROM OK,", len(d), "bytes")
+          EOF
+
+      - name: Commit if it changed, then republish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if cmp -s new.gb assets/play/kernel-drop.gb; then
+            echo "Kernel Drop is already up to date."
+            exit 0
+          fi
+          mv new.gb assets/play/kernel-drop.gb
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/play/kernel-drop.gb
+          git commit -m "Update Kernel Drop from kettle-classics"
+          git push
+          # Pushes made by this workflow don't start a Pages build on their own, so ask for one.
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/pages/builds" || echo "::warning::Couldn't request a Pages build; it will update on the next push."
