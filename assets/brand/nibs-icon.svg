@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Nibs placeholder: three corn kernels and one popped piece laid out like an app grid -->
+  <rect width="64" height="64" rx="14" fill="#3a1c1f"/>
+  <g fill="#FFC933">
+    <path d="M21 11c5 0 8 4 8 9 0 6-4 10-8 10s-8-4-8-10c0-5 3-9 8-9z"/>
+    <path d="M43 34c5 0 8 4 8 9 0 6-4 10-8 10s-8-4-8-10c0-5 3-9 8-9z"/>
+    <path d="M21 34c5 0 8 4 8 9 0 6-4 10-8 10s-8-4-8-10c0-5 3-9 8-9z"/>
+  </g>
+  <g fill="#E0A21E"><path d="M21 13c3 0 5 2 5 5h-10c0-3 2-5 5-5z"/><path d="M43 36c3 0 5 2 5 5H38c0-3 2-5 5-5z"/><path d="M21 36c3 0 5 2 5 5H16c0-3 2-5 5-5z"/></g>
+  <g fill="#FFF7EC"><circle cx="39" cy="21" r="6"/><circle cx="47" cy="19" r="5.5"/><circle cx="43" cy="13.5" r="5.5"/><circle cx="44" cy="25" r="4.5"/></g>
+</svg>

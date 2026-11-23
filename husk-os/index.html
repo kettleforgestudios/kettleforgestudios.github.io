@@ -16,11 +16,12 @@ h1{font-size:clamp(38px,8vw,64px);line-height:1.1;margin:18px 0}h2{font-size:23p
 .lead{font-size:21px;color:var(--dim)}.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:25px;margin:18px 0}
 .status{display:inline-block;background:var(--gold);color:var(--bg);border-radius:30px;padding:4px 12px;font-weight:700;font-size:13px;margin-bottom:12px}
 ul{padding-left:22px}li{margin-bottom:8px}footer{color:var(--dim);font-size:14px;margin-top:44px}
+.title-row{display:flex;align-items:center;gap:16px}.title-row img{width:64px;height:64px;flex:none}.title-row h1{margin:12px 0}.h2-row{display:flex;align-items:center;gap:12px;margin:0 0 12px}.h2-row img{width:40px;height:40px;flex:none}.h2-row h2{margin:0}
 </style>
 </head>
 <body><main>
 <header><nav><a href="/">← Kettle Forge Studios</a><a href="https://github.com/kettleforgestudios">GitHub</a></nav></header>
-<section><div class="eyebrow">Kettle Forge Labs · Embedded systems</div><h1>Husk OS</h1>
+<section><div class="eyebrow">Kettle Forge Labs · Embedded systems</div><div class="title-row"><img src="/assets/brand/husk-os-icon.svg" alt=""><h1>Husk OS</h1></div>
 <p class="lead">A lightweight, modular operating system project for ESP32-S3 devices.</p>
 <p>Husk OS is being developed as free, open-source software. The goal is a clean core system with optional, freely available apps and features that device owners can choose to install or build themselves.</p></section>
 <section class="card"><span class="status">In development</span><h2>Supported hardware — initial target</h2>
@@ -30,7 +31,7 @@ ul{padding-left:22px}li{margin-bottom:8px}footer{color:var(--dim);font-size:14px
 <p>A clean public source release, verified device-specific firmware, installation instructions, and optional free apps are planned.</p>
 <p><strong>No public Husk OS firmware download is available yet.</strong> Do not flash firmware intended for a different board or hardware revision.</p>
 <p>Existing <a href="https://github.com/CrazyLegsMalone/lesion_os_updates">firmware update directory</a> (legacy project name; no verified public download published).</p></section>
-<section class="card" id="nibs"><span class="status">Planned</span><h2>Nibs — optional add-on apps</h2>
+<section class="card" id="nibs"><span class="status">Planned</span><div class="h2-row"><img src="/assets/brand/nibs-icon.svg" alt=""><h2>Nibs — optional add-on apps</h2></div>
 <p>Husk OS will ship as a bare core. Small optional programs, called <strong>Nibs</strong>, are planned so owners can add only the features they want after installing Husk OS. The first planned Nibs:</p>
 <ul>
 <li id="cat-ears"><strong>CatEars.nib</strong>: uses the board's microphone to learn what <em>your</em> cat's meows mean, such as food, door or attention, and shows its best guess on the screen. It can also play short sounds your cat learns to recognize. It learns one cat at a time rather than claiming a universal cat language, and recordings never leave your device and your own computer.</li>
