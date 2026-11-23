@@ -110,7 +110,8 @@ h2, h3 { font-family: "Bebas Neue", system-ui, sans-serif; font-weight: 400; let
   }
   .classics-title { display: block; color: var(--text); font-weight: 700; line-height: 1.25; }
   .classics-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin-top: 3px; color: var(--dim); font-size: 13px; }
-  .classics-meta .state { margin: 0; }
+  .classics-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 8px; }
+  .classics-heading .state { margin: 0; }
   .classics-play { color: var(--gold); font-size: 14px; font-weight: 700; white-space: nowrap; }
   .classics-game:hover .classics-title, .classics-game:focus-visible .classics-title { color: var(--gold); text-decoration: underline; }
 </style>
@@ -144,8 +145,8 @@ h2, h3 { font-family: "Bebas Neue", system-ui, sans-serif; font-weight: 400; let
           <li>
             <a class="classics-game" href="/play">
               <span>
-                <span class="classics-title">Kernel Drop</span>
-                <span class="classics-meta">Pocket <span class="state now">Beta</span></span>
+                <span class="classics-heading"><span class="classics-title">Kernel Drop</span> <span class="state now">Beta</span></span>
+                <span class="classics-meta">Pocket</span>
               </span>
               <span class="classics-play" aria-hidden="true">Play &#8594;</span>
             </a>
@@ -153,8 +154,8 @@ h2, h3 { font-family: "Bebas Neue", system-ui, sans-serif; font-weight: 400; let
           <li>
             <a class="classics-game" href="/play?game=seed-room">
               <span>
-                <span class="classics-title">Planting Puzzle</span>
-                <span class="classics-meta">Pocket Color <span class="state dev">Alpha</span></span>
+                <span class="classics-heading"><span class="classics-title">Planting Puzzle</span> <span class="state dev">Alpha</span></span>
+                <span class="classics-meta">Pocket Color</span>
               </span>
               <span class="classics-play" aria-hidden="true">Play &#8594;</span>
             </a>
@@ -162,8 +163,8 @@ h2, h3 { font-family: "Bebas Neue", system-ui, sans-serif; font-weight: 400; let
           <li>
             <a class="classics-game" href="/play-nes">
               <span>
-                <span class="classics-title">Fields of Silk</span>
-                <span class="classics-meta">8-Bit (NES) <span class="state dev">Alpha</span></span>
+                <span class="classics-heading"><span class="classics-title">Fields of Silk</span> <span class="state dev">Alpha</span></span>
+                <span class="classics-meta">8-Bit (NES)</span>
               </span>
               <span class="classics-play" aria-hidden="true">Play &#8594;</span>
             </a>
