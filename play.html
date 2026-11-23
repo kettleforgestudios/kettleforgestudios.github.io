@@ -793,7 +793,7 @@
   };
 
   if (new URLSearchParams(location.search).get('game') === 'fields-of-silk') {
-    location.replace('/#kettle-classics');
+    location.replace('/play-nes');
   }
   const seedRoom = new URLSearchParams(location.search).get('game') === 'seed-room';
   const BUILTIN_ROM_URL = seedRoom ? '/assets/play/seed-room.gbc' : '/assets/play/kernel-drop.gb';
