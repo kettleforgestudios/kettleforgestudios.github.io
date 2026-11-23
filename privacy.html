@@ -43,20 +43,32 @@
 h1,h2{font-family:"Bebas Neue",system-ui,sans-serif;font-weight:400;letter-spacing:.04em}h1{font-size:44px}h2{font-size:28px}
 </style>
 <link rel="stylesheet" href="/assets/bg/textures.css">
+<link rel="stylesheet" href="/assets/site.css">
+<style>.kf-card .card-body h2{color:var(--gold);font-size:24px;margin:20px 0 6px}.kf-card .card-body h2:first-child{margin-top:0}.page-head .head-icon.app{border-radius:20px;width:88px;height:88px}</style>
 </head>
 <body class="tex-6">
 <script src="/assets/bg/textures.js"></script>
 <main>
-  <article class="card">
-    <h1>Kernelcade Privacy Policy</h1>
-    <p class="meta">Kettle Forge Studios · Last updated: November 22, 2026</p>
+  <nav class="site-top"><a class="home" href="/"><img src="/assets/brand/kfs-mark.svg" alt=""><span>Kettle Forge <b>Studios</b></span></a></nav>
+  <header class="page-head">
+    <img class="head-icon app" src="/kernelcade-icon.png" alt="">
+    <h1>Privacy Policy</h1>
+    <span class="kicker">Kernelcade</span>
+    <hr class="rule">
+    <p class="tagline">Kettle Forge Studios · Last updated: November 22, 2026</p>
+  </header>
 
-    <p>
+  <article class="kf-card">
+    <div class="card-head">
+      <span class="state now">No tracking</span>
+      <h2>The short version</h2>
+      <p class="blurb" style="font-style:normal">
       Kernelcade is developed by <strong>Kettle Forge Studios</strong>. Your privacy matters to us:
       Kernelcade does <strong>not</strong> collect, store, sell, or share personal information,
       usage analytics, crash telemetry, or advertising identifiers.
     </p>
-
+    </div>
+    <div class="card-body">
     <h2>1. Files &amp; On-Device Storage</h2>
     <p>
       Kernelcade accesses only the folders and files you explicitly select using Android’s
@@ -100,9 +112,10 @@ h1,h2{font-family:"Bebas Neue",system-ui,sans-serif;font-weight:400;letter-spaci
       <a href="https://kettleforgestudios.com">kettleforgestudios.com</a> or
       <a href="https://github.com/kettleforgestudios">github.com/kettleforgestudios</a>.
     </p>
+    </div>
   </article>
 
-  <footer>
+  <footer class="kf-footer">
     <p><a href="/">&larr; Back to Kettle Forge Studios</a></p>
     <p>&copy; 2026 Kettle Forge Studios</p>
   </footer>

@@ -1,0 +1,45 @@
+/* Shared Kettle Forge look for inner pages (matches the homepage).
+   Load AFTER a page's own <style> so these win. */
+@font-face { font-family: "Bebas Neue"; src: url("/assets/fonts/bebas-neue.woff2") format("woff2"); font-display: swap; }
+:root { --bg:#14090A; --surface:#241113; --line:#3a1c1f; --red:#DC141E; --gold:#FFC933; --text:#FFF7EC; --dim:#C99B9B; }
+
+/* Small brand bar at the top of inner pages: links home */
+.site-top { display:flex; align-items:center; justify-content:space-between; gap:12px; margin: 0 0 26px; }
+.site-top .home { display:flex; align-items:center; gap:10px; text-decoration:none; color:var(--text); }
+.site-top .home img { height:34px; width:auto; }
+.site-top .home span { font-family:"Bebas Neue",system-ui,sans-serif; font-size:22px; letter-spacing:.05em; line-height:1; }
+.site-top .home span b { color:var(--gold); font-weight:400; }
+.site-top .side { font-size:14px; color:var(--gold); }
+
+/* Page header: big icon, big title, gold spaced subtitle, gold rule, small tagline */
+.page-head { text-align:center; margin: 0 0 28px; }
+.page-head .head-icon { width:96px; height:96px; display:block; margin:0 auto 12px; }
+.page-head h1 { margin:0; font-family:"Bebas Neue",system-ui,sans-serif; font-weight:400; letter-spacing:.04em;
+  font-size: clamp(46px, 12vw, 76px); line-height:1.05; color:var(--text); text-transform:uppercase; }
+.page-head .kicker { display:block; color:var(--gold); font-family:"Bebas Neue",system-ui,sans-serif;
+  font-size: 18px; letter-spacing:.45em; padding-left:.45em; margin-top:6px; text-transform:uppercase; }
+.page-head .rule { width:72px; height:2px; border:0; margin:14px auto 0; background:var(--gold); opacity:.8; border-radius:2px; }
+.page-head .tagline { color:var(--dim); font-size:15px; margin:12px auto 0; max-width:520px; }
+
+/* Two-tone cards: tinted header band + darker body */
+.kf-card { background:var(--surface); border:1px solid var(--line); border-radius:16px; overflow:hidden; margin: 0 0 18px; padding:0; }
+.kf-card .card-head { padding:20px 24px 16px; border-bottom:1px solid rgba(220,20,30,.45);
+  background: linear-gradient(180deg, rgba(220,20,30,.34), rgba(220,20,30,.20)); }
+.kf-card .card-head h2 { margin:0; font-family:"Bebas Neue",system-ui,sans-serif; font-weight:400; letter-spacing:.04em; font-size:30px; color:var(--gold); line-height:1.1; }
+.kf-card .card-head .blurb { color:#E9CFCB; font-style:italic; font-size:15px; margin:6px 0 0; }
+.kf-card .card-head .head-row { display:flex; align-items:center; gap:12px; }
+.kf-card .card-head .head-row img { width:40px; height:40px; flex:none; }
+.kf-card .card-body { padding:18px 24px 22px; background:#170A0C; }
+.kf-card .card-body > :last-child { margin-bottom:0; }
+
+/* Status labels */
+.state { display:inline-block; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  border-radius:999px; padding:2px 9px; margin-bottom:8px; font-family: system-ui, sans-serif; }
+.state.now { background:var(--gold); color:var(--bg); }
+.state.dev { border:1px solid var(--gold); color:var(--gold); }
+.state.soon { border:1px solid var(--dim); color:var(--dim); }
+
+/* Footer */
+.kf-footer { margin-top:32px; padding-top:18px; border-top:1px solid var(--line); color:var(--dim); font-size:14px; text-align:center; }
+.kf-footer p { margin:4px 0; color:var(--dim); }
+.kf-footer a { color:var(--gold); }

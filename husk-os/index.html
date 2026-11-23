@@ -22,27 +22,62 @@ ul{padding-left:22px}li{margin-bottom:8px}footer{color:var(--dim);font-size:14px
 h1,h2{font-family:"Bebas Neue",system-ui,sans-serif;font-weight:400;letter-spacing:.04em}h1{font-size:clamp(52px,11vw,84px)}h2{font-size:30px}
 </style>
 <link rel="stylesheet" href="/assets/bg/textures.css">
+<link rel="stylesheet" href="/assets/site.css">
 </head>
 <body class="tex-6">
 <script src="/assets/bg/textures.js"></script><main>
-<header><nav><a href="/">← Kettle Forge Studios</a><a href="https://github.com/kettleforgestudios">GitHub</a></nav></header>
-<section><div class="eyebrow">Kettle Forge Labs · Embedded systems</div><div class="title-row"><img src="/assets/brand/husk-os-icon.svg" alt=""><h1>Husk OS</h1></div>
-<p class="lead">A lightweight, modular operating system for ESP32-S3 devices.</p>
-<p>Free and open source. A clean, simple core, plus optional free <a href="#nibs">Nibs</a> you add as you like. Every build is made for a specific device.</p></section>
-<section class="card"><span class="status">In development</span><h2>Supported hardware</h2>
-<p><strong>Waveshare ESP32-S3-ePaper-1.54G V2</strong></p>
-<p>1.54-inch, 200 × 200 four-color e-paper display, two-button controls, Wi-Fi and device-specific firmware. Other ESP32-S3 boards may require different builds and hardware support.</p></section>
-<section class="card"><h2>Free downloads & source code</h2>
-<p>A clean public source release, verified device-specific firmware, installation instructions, and optional free apps are planned.</p>
-<p><strong>No public Husk OS firmware download is available yet.</strong> Do not flash firmware intended for a different board or hardware revision.</p>
-<p>Existing <a href="https://github.com/CrazyLegsMalone/lesion_os_updates">firmware update directory</a> (legacy project name; no verified public download published).</p></section>
-<section class="card" id="nibs"><span class="status">Planned</span><div class="h2-row"><img src="/assets/brand/nibs-icon.svg" alt=""><h2>Nibs — optional add-on apps</h2></div>
-<p>Husk OS will ship as a bare core. Small optional programs, called <strong>Nibs</strong>, are planned so owners can add only the features they want after installing Husk OS. The first planned Nibs:</p>
-<ul>
-<li id="cat-ears"><strong>CatEars.nib</strong>: uses the board's microphone to learn what <em>your</em> cat's meows mean, such as food, door or attention, and shows its best guess on the screen. It can also play short sounds your cat learns to recognize. It learns one cat at a time rather than claiming a universal cat language, and recordings never leave your device and your own computer.</li>
-<li><strong>Zombie story.nib</strong>: a choose-your-path zombie story, played with the two buttons.</li>
-<li><strong>Weather.nib</strong>: current conditions and forecast on the e-paper screen over Wi-Fi.</li>
-</ul>
-<p>Nibs are not available yet. Details will be shared once they have been built and tested on real hardware.</p></section>
-<footer>© 2026 Kettle Forge Studios · Kettle Forge Labs</footer>
+<nav class="site-top"><a class="home" href="/"><img src="/assets/brand/kfs-mark.svg" alt=""><span>Kettle Forge <b>Studios</b></span></a><a class="side" href="https://github.com/kettleforgestudios">GitHub</a></nav>
+
+<header class="page-head">
+  <img class="head-icon" src="/assets/brand/husk-os-icon.svg" alt="">
+  <h1>Husk OS</h1>
+  <span class="kicker">Kettle Forge Labs</span>
+  <hr class="rule">
+  <p class="tagline">A lightweight, modular operating system for ESP32-S3 devices. Free and open source: a clean, simple core, plus optional free <a href="#nibs">Nibs</a> you add as you like. Every build is made for a specific device.</p>
+</header>
+
+<section class="kf-card">
+  <div class="card-head">
+    <span class="state dev">In development</span>
+    <h2>Supported hardware</h2>
+  </div>
+  <div class="card-body">
+    <p><strong>Waveshare ESP32-S3-ePaper-1.54G V2</strong></p>
+    <p>1.54-inch, 200 × 200 four-color e-paper display, two-button controls, Wi-Fi and device-specific firmware. Other ESP32-S3 boards may require different builds and hardware support.</p>
+  </div>
+</section>
+
+<section class="kf-card">
+  <div class="card-head">
+    <span class="state soon">Coming soon</span>
+    <h2>Free downloads &amp; source code</h2>
+  </div>
+  <div class="card-body">
+    <p>A clean public source release, verified device-specific firmware, installation instructions, and optional free apps are planned.</p>
+    <p><strong>No public Husk OS firmware download is available yet.</strong> Do not flash firmware intended for a different board or hardware revision.</p>
+    <p>Existing <a href="https://github.com/CrazyLegsMalone/lesion_os_updates">firmware update directory</a> (legacy project name; no verified public download published).</p>
+  </div>
+</section>
+
+<section class="kf-card" id="nibs">
+  <div class="card-head">
+    <span class="state soon">Planned</span>
+    <div class="head-row"><img src="/assets/brand/nibs-icon.svg" alt=""><h2>Nibs — optional add-on apps</h2></div>
+    <p class="blurb">Husk OS ships as a bare core. Nibs are small optional programs you add after installing it.</p>
+  </div>
+  <div class="card-body">
+    <p>The first planned Nibs:</p>
+    <ul>
+      <li id="cat-ears"><strong>CatEars.nib</strong>: uses the board's microphone to learn what <em>your</em> cat's meows mean, such as food, door or attention, and shows its best guess on the screen. It can also play short sounds your cat learns to recognize. It learns one cat at a time rather than claiming a universal cat language, and recordings never leave your device and your own computer.</li>
+      <li><strong>Zombie story.nib</strong>: a choose-your-path zombie story, played with the two buttons.</li>
+      <li><strong>Weather.nib</strong>: current conditions and forecast on the e-paper screen over Wi-Fi.</li>
+    </ul>
+    <p>Nibs are not available yet. Details will be shared once they have been built and tested on real hardware.</p>
+  </div>
+</section>
+
+<footer class="kf-footer">
+  <p><a href="/">&larr; Back to Kettle Forge Studios</a></p>
+  <p>&copy; 2026 Kettle Forge Studios · Kettle Forge Labs</p>
+</footer>
 </main></body></html>
