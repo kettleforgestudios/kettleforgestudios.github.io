@@ -1625,7 +1625,26 @@
     }
   }
 
-  boot();
+  // Offline support: install the service worker (play-sw.js at the site root).
+  // It keeps a copy of the player, the core and Kernel Drop on the device so the
+  // Home Screen app still opens with no signal. Service workers only run on
+  // https (or localhost), so skip it anywhere else.
+  function registerOfflineSupport() {
+    if (!('serviceWorker' in navigator) || !window.isSecureContext) return;
+    // No controller yet = this is the first visit. When the new worker takes over
+    // this page (after it has finished downloading everything), tell the player.
+    if (!navigator.serviceWorker.controller) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        showToast('Saved for offline play');
+      }, { once: true });
+    }
+    navigator.serviceWorker.register('/play-sw.js', { scope: '/play' })
+      .catch((err) => console.warn('Offline support unavailable:', err));
+  }
+
+  // Install offline support only after the game is running, so the first visit
+  // isn't slowed down by downloading the offline copy at the same time.
+  boot().finally(registerOfflineSupport);
 })();
 </script>
 </body>
