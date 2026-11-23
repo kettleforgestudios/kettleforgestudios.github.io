@@ -32,8 +32,11 @@ jobs:
         run: |
           set -euo pipefail
           REPO=kettleforgestudios/kettle-classics
-          # The file name changes every build (kernel-drop-build-N.gb), so look it up.
-          gh release download kernel-drop-latest -R "$REPO" --pattern 'kernel-drop-build-*.gb' --output new.gb --clobber
+          # Use the exact release asset so the displayed number matches the ROM.
+          asset=$(gh release view kernel-drop-latest -R "$REPO" --json assets --jq '.assets[].name | select(test("^kernel-drop-build-[0-9]+[.]gb$"))')
+          [[ "$asset" =~ ^kernel-drop-build-([0-9]+)[.]gb$ ]]
+          echo "KERNEL_DROP_BUILD=${BASH_REMATCH[1]}" >> "$GITHUB_ENV"
+          gh release download kernel-drop-latest -R "$REPO" --pattern "$asset" --output new.gb --clobber
           gh release view kernel-drop-latest -R "$REPO" --json body --jq .body
 
       - name: Check it's a real, logo-free Pocket ROM
@@ -52,14 +55,28 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          if cmp -s new.gb assets/play/kernel-drop.gb; then
+          mv new.gb assets/play/kernel-drop.gb
+          python3 - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+          page = Path("index.html")
+          updated, count = re.subn(
+              r'(<span id="kernel-drop-version" class="state now">Beta · Build )[0-9]+(</span>)',
+              lambda match: match[1] + os.environ["KERNEL_DROP_BUILD"] + match[2],
+              page.read_text(encoding="utf-8"),
+          )
+          if count != 1:
+              raise SystemExit("Expected exactly one Kernel Drop build badge")
+          page.write_text(updated, encoding="utf-8")
+          PY
+          if git diff --quiet -- assets/play/kernel-drop.gb index.html; then
             echo "Kernel Drop is already up to date."
             exit 0
           fi
-          mv new.gb assets/play/kernel-drop.gb
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/play/kernel-drop.gb
+          git add assets/play/kernel-drop.gb index.html
           git commit -m "Update Kernel Drop from kettle-classics"
           git push
           # Pushes made by this workflow don't start a Pages build on their own, so ask for one.
