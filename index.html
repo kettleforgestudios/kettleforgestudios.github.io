@@ -45,6 +45,9 @@
   .grid { display: grid; gap: 18px; grid-template-columns: 1fr 1fr; }
   .grid .card { margin: 0; }
   h3 { margin: 0 0 6px; font-size: 18px; color: var(--gold); }
+  .sub-head { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+  .sub-head img { width: 44px; height: 44px; flex: none; }
+  .sub-head h3 { margin: 0; }
   a { color: var(--gold); }
   .try { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
   .small { font-size: 13px; margin-top: 8px; }
@@ -95,7 +98,7 @@
 
   <div class="grid">
     <section class="card">
-      <h3><a href="/husk-os/">Kettle Forge Labs</a></h3>
+      <div class="sub-head"><img src="assets/brand/labs-icon.svg" alt=""><h3><a href="/husk-os/">Kettle Forge Labs</a></h3></div>
       <p class="muted">Experiments and free, open software, from tiny
         microcontroller systems to whatever pops next.</p>
       <p style="margin-top:12px"><a href="/husk-os/">Explore Husk OS — free ESP32-S3 operating system</a></p>
@@ -105,7 +108,7 @@
         <a href="/husk-os/#nibs">More</a></p>
     </section>
     <section class="card">
-      <h3>Kettle Forge Kitchen</h3>
+      <div class="sub-head"><img src="assets/brand/kitchen-icon.svg" alt=""><h3>Kettle Forge Kitchen</h3></div>
       <p class="muted">The workbench: tools we build to make our games and
         apps, some of which we'll share.</p>
       <p class="muted" style="margin-top:12px"><strong>Coming soon: ESP32-S3 Flasher</strong>, a free
