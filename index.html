@@ -96,6 +96,23 @@ h2, h3 { font-family: "Bebas Neue", system-ui, sans-serif; font-weight: 400; let
   .card-head .blurb { color: #E9CFCB; margin-top: 4px; }
   .card-head h2 { margin: 6px 0 6px; }
   .items { margin-top: 0; padding-top: 18px; border-top: 0; }
+
+  .classics summary {
+    cursor: pointer; color: var(--gold);
+    font: 400 26px/1.2 "Bebas Neue", system-ui, sans-serif; letter-spacing: .04em;
+    padding-block: 5px;
+  }
+  .classics-list { list-style: none; padding: 0; margin: 10px 0 0; }
+  .classics-list li { border-top: 1px solid var(--line); }
+  .classics-game {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px;
+    align-items: center; padding: 10px 0; text-decoration: none;
+  }
+  .classics-title { display: block; color: var(--text); font-weight: 700; line-height: 1.25; }
+  .classics-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin-top: 3px; color: var(--dim); font-size: 13px; }
+  .classics-meta .state { margin: 0; }
+  .classics-play { color: var(--gold); font-size: 14px; font-weight: 700; white-space: nowrap; }
+  .classics-game:hover .classics-title, .classics-game:focus-visible .classics-title { color: var(--gold); text-decoration: underline; }
 </style>
 <link rel="stylesheet" href="/assets/bg/textures.css">
 </head>
@@ -120,14 +137,38 @@ h2, h3 { font-family: "Bebas Neue", system-ui, sans-serif; font-weight: 400; let
         Bring your own game files to play, and enjoy our original games that come
         built in. Coming to Google Play.</p>
     </div>
-    <div class="card-body center">
+    <div class="card-body classics">
       <details id="kettle-classics">
-        <summary><strong>Kettle Classics</strong></summary>
-        <div style="margin-top:12px;">
-          <p><a class="play" href="/play">Play Kernel Drop</a> <strong>Beta</strong></p>
-          <p style="margin-top:12px;"><a class="play" href="/play?game=seed-room">Play Pocket Color Prototype</a> <strong>Alpha · Title TBD</strong></p>
-          <p style="margin-top:12px;"><a class="play" href="/play-nes">Play Fields of Silk</a> <strong>8-Bit (NES) · Alpha</strong></p>
-        </div>
+        <summary>Kettle Classics</summary>
+        <ul class="classics-list">
+          <li>
+            <a class="classics-game" href="/play">
+              <span>
+                <span class="classics-title">Kernel Drop</span>
+                <span class="classics-meta">Pocket <span class="state now">Beta</span></span>
+              </span>
+              <span class="classics-play" aria-hidden="true">Play &#8594;</span>
+            </a>
+          </li>
+          <li>
+            <a class="classics-game" href="/play?game=seed-room">
+              <span>
+                <span class="classics-title">Planting Puzzle</span>
+                <span class="classics-meta">Pocket Color <span class="state dev">Alpha</span></span>
+              </span>
+              <span class="classics-play" aria-hidden="true">Play &#8594;</span>
+            </a>
+          </li>
+          <li>
+            <a class="classics-game" href="/play-nes">
+              <span>
+                <span class="classics-title">Fields of Silk</span>
+                <span class="classics-meta">8-Bit (NES) <span class="state dev">Alpha</span></span>
+              </span>
+              <span class="classics-play" aria-hidden="true">Play &#8594;</span>
+            </a>
+          </li>
+        </ul>
       </details>
     </div>
   </section>
