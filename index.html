@@ -26,8 +26,12 @@
     margin: 0; font-size: clamp(30px, 7vw, 46px); letter-spacing: .04em;
     text-transform: uppercase; line-height: 1.1;
   }
-  h1 span { color: var(--gold); }
-  .tag { color: var(--dim); margin: 10px 0 0; font-size: 18px; }
+  h1 span {
+    display: block; color: var(--gold); margin-top: 6px;
+    font-size: .42em; font-weight: 600; letter-spacing: .55em;
+    padding-left: .55em; /* balances the trailing letter-space so it stays centered */
+  }
+  .tag { color: var(--dim); margin: 14px 0 0; font-size: 18px; }
   .card {
     background: var(--surface); border: 1px solid var(--line);
     border-radius: 16px; padding: 24px; margin: 0 0 18px;
