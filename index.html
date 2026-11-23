@@ -86,6 +86,16 @@
 h2, h3 { font-family: "Bebas Neue", system-ui, sans-serif; font-weight: 400; letter-spacing: .04em; }
   h2 { font-size: 34px; }
   h3 { font-size: 26px; }
+  /* Card header band: icon, title and short description stand out above the details */
+  .card { padding: 0; overflow: hidden; }
+  .card-head { padding: 22px 24px 18px; border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(220,20,30,.18), rgba(220,20,30,.06)); }
+  .card-body { padding: 18px 24px 24px; }
+  .center { text-align: center; }
+  .app-icon { width: 88px; height: 88px; border-radius: 20px; display: block; margin: 0 auto 12px; }
+  .card-head .blurb { color: #E9CFCB; margin-top: 4px; }
+  .card-head h2 { margin: 6px 0 6px; }
+  .items { margin-top: 0; padding-top: 18px; border-top: 0; }
 </style>
 </head>
 <body>
@@ -98,32 +108,34 @@ h2, h3 { font-family: "Bebas Neue", system-ui, sans-serif; font-weight: 400; let
     <p class="tag" id="tagline">Software, made under pressure.</p>
   </header>
 
-  <section class="card app">
-    <img src="kernelcade-icon.png" alt="Kernelcade app icon" width="88" height="88">
-    <div>
+  <section class="card">
+    <div class="card-head center">
+      <img class="app-icon" src="kernelcade-icon.png" alt="Kernelcade app icon" width="88" height="88">
       <span class="pill">In development</span>
       <h2>Kernelcade</h2>
-      <p>A 2.5D retro game player for Android. Kernelcade pops classic 2D game
+      <p class="blurb">A 2.5D retro game player for Android. Kernelcade pops classic 2D game
         worlds apart into layers of depth, with tilt and parallax you can feel.
         Bring your own game files to play, and enjoy our original games that come
         built in. Coming to Google Play.</p>
-      <!-- Sample game: Kernel Drop ships built into Kernelcade; the browser
-           version (play.html, served at /play) is the plain 2D game. -->
-      <div class="try">
-        <p><strong>Try a game now:</strong> <em>Kernel Drop</em>, our own original
-          game that comes built into Kernelcade, plays free in your browser.</p>
-        <p style="margin-top:12px;"><a class="play" href="/play">&#9654; Play Kernel Drop</a></p>
-        <p class="muted small">The browser version is 2D; the Android app adds depth.</p>
-      </div>
+    </div>
+    <!-- Sample game: Kernel Drop ships built into Kernelcade; the browser
+         version (play.html, served at /play) is the plain 2D game. -->
+    <div class="card-body center">
+      <p><strong>Try a game now:</strong> <em>Kernel Drop</em>, our own original
+        game that comes built into Kernelcade, plays free in your browser.</p>
+      <p style="margin-top:12px;"><a class="play" href="/play">&#9654; Play Kernel Drop</a></p>
+      <p class="muted small">The browser version is 2D; the Android app adds depth.</p>
     </div>
   </section>
 
   <div class="grid">
     <section class="card">
-      <div class="sub-head"><img src="assets/brand/labs-icon.svg" alt=""><h3><a href="/husk-os/">Kettle Forge Labs</a></h3></div>
+      <div class="card-head">
+        <div class="sub-head"><img src="assets/brand/labs-icon.svg" alt=""><h3><a href="/husk-os/">Kettle Forge Labs</a></h3></div>
       <p class="blurb">Experiments and free, open software, from tiny
         microcontroller systems to whatever pops next.</p>
-      <div class="items">
+      </div>
+      <div class="card-body items">
         <div class="item">
           <span class="state dev">In development</span>
           <p><a href="/husk-os/">Husk OS</a>: free operating system for ESP32-S3 boards.</p>
@@ -137,10 +149,12 @@ h2, h3 { font-family: "Bebas Neue", system-ui, sans-serif; font-weight: 400; let
       </div>
     </section>
     <section class="card">
-      <div class="sub-head"><img src="assets/brand/kitchen-icon.svg" alt=""><h3>Kettle Forge Kitchen</h3></div>
+      <div class="card-head">
+        <div class="sub-head"><img src="assets/brand/kitchen-icon.svg" alt=""><h3>Kettle Forge Kitchen</h3></div>
       <p class="blurb">The workbench: tools we build to make our games and
         apps, some of which we'll share.</p>
-      <div class="items">
+      </div>
+      <div class="card-body items">
         <div class="item">
           <span class="state now">Available</span>
           <p><a href="/qr">QR Code Generator</a>: free, offline, no ads. Make QR codes for
