@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Internal Kettle Forge tool: keep it out of search results. -->
+  <meta name="robots" content="noindex, nofollow" />
+  <title>KettleForge Icon Studio — Android App Icon & SVG Generator</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- JSZip CDN for Android Studio Icon Pack .ZIP export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            canvas: '#111518',
+            card: '#1A2024',
+            cardHover: '#21282D',
+            borderSubtle: '#2A333A',
+            forgeRed: '#C92B29',
+            forgeGold: '#D8A84E',
+            forgeCream: '#FBF3D5',
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #111518;
+      color: #E6EDF3;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    /* Transparency checkerboard pattern */
+    .checkerboard {
+      background-color: #1c2226;
+      background-image:
+        linear-gradient(45deg, #272f35 25%, transparent 25%),
+        linear-gradient(-45deg, #272f35 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #272f35 75%),
+        linear-gradient(-45deg, transparent 75%, #272f35 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    }
+
+    .checkerboard-sm {
+      background-color: #1c2226;
+      background-image:
+        linear-gradient(45deg, #272f35 25%, transparent 25%),
+        linear-gradient(-45deg, #272f35 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #272f35 75%),
+        linear-gradient(-45deg, transparent 75%, #272f35 75%);
+      background-size: 12px 12px;
+      background-position: 0 0, 0 6px, 6px -6px, -6px 0px;
+    }
+
+    /* Custom color picker styling */
+    input[type="color"] {
+      -webkit-appearance: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+    input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+    input[type="color"]::-webkit-color-swatch {
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 0.5rem;
+    }
+
+    /* Range slider styling */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      background: #2A333A;
+      border-radius: 999px;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #D8A84E;
+      border: 2px solid #111518;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+      transition: transform 0.12s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.12);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #D8A84E;
+      border: 2px solid #111518;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Toast animation */
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translate(-50%, 16px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+    .toast-enter {
+      animation: slideUpFade 0.22s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-forgeGold/30 selection:text-forgeCream">
+
+  <!-- Top Header -->
+  <header class="border-b border-borderSubtle bg-card/80 backdrop-blur-md sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <!-- Mini dynamic brand badge -->
+        <div id="header-badge" class="w-9 h-9 rounded-xl overflow-hidden shadow-md ring-1 ring-white/10 shrink-0"></div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold tracking-tight text-white leading-tight">
+            KettleForge <span class="text-forgeGold font-semibold">Icon Studio</span>
+          </h1>
+          <p class="text-xs text-slate-400 hidden sm:block">Android App Icon & Vector Asset Generator</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button id="btn-reset" type="button"
+          class="px-3 py-2 text-xs sm:text-sm font-medium text-slate-300 hover:text-white bg-canvas hover:bg-cardHover border border-borderSubtle rounded-xl transition-colors">
+          Reset Defaults
+        </button>
+        <button id="btn-header-zip" type="button"
+          class="px-3.5 py-2 text-xs sm:text-sm font-semibold text-canvas bg-forgeGold hover:bg-[#e5b75f] rounded-xl shadow-sm transition-all flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3" />
+          </svg>
+          <span>Export Android ZIP</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+      <!-- LEFT / TOP: Live Preview Column (7 cols on desktop) -->
+      <section class="lg:col-span-7 flex flex-col gap-6">
+
+        <!-- Primary Preview Card -->
+        <div class="bg-card border border-borderSubtle rounded-2xl p-4 sm:p-6 shadow-xl">
+          <!-- Shape Tabs + Safe Zone Toggle -->
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+            <div class="inline-flex flex-wrap bg-canvas p-1 rounded-xl border border-borderSubtle gap-1" role="tablist" aria-label="Icon shape preview">
+              <button type="button" data-shape="square" class="shape-tab px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-all">
+                Square
+              </button>
+              <button type="button" data-shape="rounded" class="shape-tab px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-all">
+                Rounded Square
+              </button>
+              <button type="button" data-shape="circle" class="shape-tab px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-all">
+                Circle
+              </button>
+              <button type="button" data-shape="foreground" class="shape-tab px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-all">
+                Foreground Only
+              </button>
+            </div>
+
+            <!-- Adaptive Safe-Zone Overlay Toggle -->
+            <label class="inline-flex items-center gap-2 cursor-pointer select-none text-xs sm:text-sm text-slate-300 hover:text-white bg-canvas px-3 py-1.5 rounded-xl border border-borderSubtle">
+              <input id="toggle-safezone" type="checkbox" class="accent-forgeGold w-4 h-4 rounded cursor-pointer" />
+              <span>Adaptive Safe Zone (66%)</span>
+            </label>
+          </div>
+
+          <!-- Large Preview Canvas Area -->
+          <div class="relative w-full aspect-square max-w-[420px] mx-auto rounded-2xl checkerboard border border-borderSubtle flex items-center justify-center p-6 sm:p-8 overflow-hidden shadow-inner">
+            <!-- Rendered SVG Container -->
+            <div id="main-preview-container" class="w-full h-full flex items-center justify-center drop-shadow-2xl transition-all duration-150"></div>
+
+            <!-- Adaptive Safe Zone Guide Overlay (excluded from exports) -->
+            <div id="safezone-overlay" class="pointer-events-none absolute inset-6 sm:inset-8 hidden items-center justify-center">
+              <!-- Outer 108dp boundary dashed square -->
+              <div class="w-full h-full border border-dashed border-sky-400/40 rounded-lg relative flex items-center justify-center">
+                <!-- 66% Safe Zone Circle -->
+                <div class="w-[66%] h-[66%] rounded-full border-2 border-dashed border-sky-400/90 shadow-[0_0_0_9999px_rgba(0,0,0,0.18)] flex items-end justify-center pb-2">
+                  <span class="text-[10px] font-mono font-medium bg-sky-950/90 text-sky-300 px-2 py-0.5 rounded-full border border-sky-400/40">
+                    66% Safe Zone
+                  </span>
+                </div>
+                <!-- Crosshair lines -->
+                <div class="absolute inset-x-0 top-1/2 h-px bg-sky-400/20"></div>
+                <div class="absolute inset-y-0 left-1/2 w-px bg-sky-400/20"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Status Footer inside preview -->
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+            <span id="preview-meta" class="font-mono">ViewBox 512×512 • True Transparent Cutouts</span>
+            <span id="preview-palette-chips" class="flex items-center gap-1.5"></span>
+          </div>
+        </div>
+
+        <!-- Android Launcher Preview Strip -->
+        <div class="bg-card border border-borderSubtle rounded-2xl p-4 sm:p-6 shadow-xl">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div>
+              <h2 class="text-sm font-semibold text-white">Android Launcher Preview</h2>
+              <p class="text-xs text-slate-400">Simultaneous live check across system icon masks &amp; sizes</p>
+            </div>
+            <!-- Wallpaper Light/Dark Toggle -->
+            <div class="inline-flex bg-canvas p-1 rounded-xl border border-borderSubtle text-xs">
+              <button id="wp-dark" type="button" class="px-2.5 py-1 rounded-lg font-medium transition-colors bg-cardHover text-white">
+                Dark Wallpaper
+              </button>
+              <button id="wp-light" type="button" class="px-2.5 py-1 rounded-lg font-medium transition-colors text-slate-400 hover:text-white">
+                Light Wallpaper
+              </button>
+            </div>
+          </div>
+
+          <!-- Simulated Wallpaper Strip -->
+          <div id="launcher-strip" class="rounded-xl p-5 sm:p-6 border border-borderSubtle transition-colors duration-200 bg-gradient-to-br from-[#0f1419] via-[#17202a] to-[#111518]">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-5 items-end justify-items-center">
+              <!-- Circle Icon -->
+              <div class="flex flex-col items-center gap-2">
+                <div id="mini-circle" class="w-16 h-16 rounded-full shadow-lg overflow-hidden"></div>
+                <span class="launcher-label text-xs font-medium text-slate-200">Circle</span>
+              </div>
+              <!-- Squircle / Rounded Square -->
+              <div class="flex flex-col items-center gap-2">
+                <div id="mini-rounded" class="w-16 h-16 rounded-[18px] shadow-lg overflow-hidden"></div>
+                <span class="launcher-label text-xs font-medium text-slate-200">Rounded</span>
+              </div>
+              <!-- Legacy Square -->
+              <div class="flex flex-col items-center gap-2">
+                <div id="mini-square" class="w-16 h-16 rounded-none shadow-lg overflow-hidden"></div>
+                <span class="launcher-label text-xs font-medium text-slate-200">Square</span>
+              </div>
+              <!-- Small 48px Notification / MDPI -->
+              <div class="flex flex-col items-center gap-2">
+                <div class="h-16 flex items-center justify-center">
+                  <div id="mini-small" class="w-12 h-12 rounded-xl shadow-md overflow-hidden"></div>
+                </div>
+                <span class="launcher-label text-xs font-medium text-slate-200">48px Small</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RIGHT / BOTTOM: Controls & Export Column (5 cols on desktop) -->
+      <aside class="lg:col-span-5 flex flex-col gap-6">
+
+        <!-- Color Customization Card -->
+        <div class="bg-card border border-borderSubtle rounded-2xl p-5 shadow-xl space-y-5">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-white tracking-wide uppercase">Colors &amp; Style</h2>
+            <!-- Subtle Shading Toggle -->
+            <label class="inline-flex items-center gap-2 cursor-pointer select-none text-xs text-slate-300 hover:text-white">
+              <input id="toggle-shading" type="checkbox" checked class="accent-forgeGold w-4 h-4 rounded cursor-pointer" />
+              <span>Subtle Shading</span>
+            </label>
+          </div>
+
+          <!-- 4 Color Controls -->
+          <div class="space-y-3.5">
+            <!-- 1. Background Color -->
+            <div class="p-3 rounded-xl bg-canvas border border-borderSubtle space-y-2.5">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-xs font-medium text-slate-300">Background</span>
+                <label class="inline-flex items-center gap-1.5 cursor-pointer select-none text-xs text-slate-400 hover:text-white">
+                  <input id="toggle-transparent" type="checkbox" class="accent-forgeGold w-3.5 h-3.5 rounded cursor-pointer" />
+                  <span>Transparent</span>
+                </label>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <input id="picker-bg" type="color" value="#1C2327" class="w-10 h-9 rounded-lg bg-transparent shrink-0" aria-label="Background color picker" />
+                <input id="hex-bg" type="text" value="#1C2327" maxlength="7"
+                  class="flex-1 bg-card border border-borderSubtle rounded-lg px-3 py-1.5 text-sm font-mono uppercase text-white focus:outline-none focus:border-forgeGold" />
+              </div>
+            </div>
+
+            <!-- 2. Kettle Color -->
+            <div class="p-3 rounded-xl bg-canvas border border-borderSubtle">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-medium text-slate-300">Cauldron Kettle</span>
+                <span class="text-[11px] text-slate-500">Primary Vessel</span>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <input id="picker-kettle" type="color" value="#C92B29" class="w-10 h-9 rounded-lg bg-transparent shrink-0" aria-label="Kettle color picker" />
+                <input id="hex-kettle" type="text" value="#C92B29" maxlength="7"
+                  class="flex-1 bg-card border border-borderSubtle rounded-lg px-3 py-1.5 text-sm font-mono uppercase text-white focus:outline-none focus:border-forgeGold" />
+              </div>
+            </div>
+
+            <!-- 3. Flame Color -->
+            <div class="p-3 rounded-xl bg-canvas border border-borderSubtle">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-medium text-slate-300">Forge Flame</span>
+                <span class="text-[11px] text-slate-500">Crescent Fire</span>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <input id="picker-flame" type="color" value="#D8A84E" class="w-10 h-9 rounded-lg bg-transparent shrink-0" aria-label="Flame color picker" />
+                <input id="hex-flame" type="text" value="#D8A84E" maxlength="7"
+                  class="flex-1 bg-card border border-borderSubtle rounded-lg px-3 py-1.5 text-sm font-mono uppercase text-white focus:outline-none focus:border-forgeGold" />
+              </div>
+            </div>
+
+            <!-- 4. Popcorn Color -->
+            <div class="p-3 rounded-xl bg-canvas border border-borderSubtle">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-medium text-slate-300">Popping Kernels</span>
+                <span class="text-[11px] text-slate-500">3 Popcorns</span>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <input id="picker-popcorn" type="color" value="#FBF3D5" class="w-10 h-9 rounded-lg bg-transparent shrink-0" aria-label="Popcorn color picker" />
+                <input id="hex-popcorn" type="text" value="#FBF3D5" maxlength="7"
+                  class="flex-1 bg-card border border-borderSubtle rounded-lg px-3 py-1.5 text-sm font-mono uppercase text-white focus:outline-none focus:border-forgeGold" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Color Presets -->
+          <div class="pt-1">
+            <div class="text-xs font-medium text-slate-400 mb-2.5">Quick Color Presets</div>
+            <div id="presets-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+          </div>
+        </div>
+
+        <!-- Framing & Padding Card -->
+        <div class="bg-card border border-borderSubtle rounded-2xl p-5 shadow-xl space-y-4">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-white tracking-wide uppercase">Framing &amp; Alignment</h2>
+            <button id="btn-center-frame" type="button" class="text-xs text-forgeGold hover:underline">Center</button>
+          </div>
+
+          <!-- Scale Slider -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <label for="slider-scale" class="text-slate-300 font-medium">Logo Scale / Padding</label>
+              <span id="val-scale" class="font-mono text-forgeGold">85%</span>
+            </div>
+            <input id="slider-scale" type="range" min="50" max="110" step="1" value="85" class="w-full" />
+          </div>
+
+          <!-- Vertical Offset Slider -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between text-xs">
+              <label for="slider-offset-y" class="text-slate-300 font-medium">Vertical Offset</label>
+              <span id="val-offset-y" class="font-mono text-forgeGold">0px</span>
+            </div>
+            <input id="slider-offset-y" type="range" min="-60" max="60" step="1" value="0" class="w-full" />
+          </div>
+        </div>
+
+        <!-- Export Card -->
+        <div class="bg-card border border-borderSubtle rounded-2xl p-5 shadow-xl space-y-5">
+          <h2 class="text-sm font-semibold text-white tracking-wide uppercase">Export Assets</h2>
+
+          <!-- Single Asset Export -->
+          <div class="space-y-3">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="export-shape" class="block text-xs text-slate-400 mb-1.5">Shape</label>
+                <select id="export-shape"
+                  class="w-full bg-canvas border border-borderSubtle rounded-xl px-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-forgeGold">
+                  <option value="square">Square</option>
+                  <option value="rounded" selected>Rounded Square</option>
+                  <option value="circle">Circle</option>
+                  <option value="foreground">Transparent Foreground</option>
+                </select>
+              </div>
+              <div>
+                <label for="export-size" class="block text-xs text-slate-400 mb-1.5">Resolution</label>
+                <select id="export-size"
+                  class="w-full bg-canvas border border-borderSubtle rounded-xl px-3 py-2 text-xs sm:text-sm text-white font-mono focus:outline-none focus:border-forgeGold">
+                  <option value="48">48 × 48 px (mdpi)</option>
+                  <option value="72">72 × 72 px (hdpi)</option>
+                  <option value="96">96 × 96 px (xhdpi)</option>
+                  <option value="144">144 × 144 px (xxhdpi)</option>
+                  <option value="192">192 × 192 px (xxxhdpi)</option>
+                  <option value="432">432 × 432 px (adaptive)</option>
+                  <option value="512" selected>512 × 512 px (Play Store)</option>
+                  <option value="1024">1024 × 1024 px (HD)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <button id="btn-download-png" type="button"
+                class="w-full py-2.5 px-4 bg-cardHover hover:bg-[#2a333b] text-white border border-borderSubtle rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center justify-center gap-2">
+                <svg class="w-4 h-4 text-forgeGold" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3" />
+                </svg>
+                Download PNG
+              </button>
+              <button id="btn-download-svg" type="button"
+                class="w-full py-2.5 px-4 bg-cardHover hover:bg-[#2a333b] text-white border border-borderSubtle rounded-xl text-xs sm:text-sm font-semibold transition-colors flex items-center justify-center gap-2">
+                <svg class="w-4 h-4 text-forgeRed" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+                Download SVG
+              </button>
+            </div>
+          </div>
+
+          <hr class="border-borderSubtle" />
+
+          <!-- Full Android Studio ZIP Pack -->
+          <div class="space-y-2.5">
+            <button id="btn-export-zip" type="button"
+              class="w-full py-3 px-4 bg-forgeGold hover:bg-[#e5b75f] text-canvas rounded-xl text-sm font-bold shadow-lg shadow-forgeGold/10 transition-all flex items-center justify-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+              </svg>
+              <span id="zip-btn-text">Download Android App Icon Pack (.ZIP)</span>
+            </button>
+            <p class="text-[11px] text-slate-400 leading-relaxed">
+              Includes Play Store 512px, Adaptive foreground &amp; background (432px), all <code class="text-slate-300">mipmap-*</code> square &amp; round PNGs (mdpi–xxxhdpi), and <code class="text-slate-300">vector/logo.svg</code>.
+            </p>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+  </main>
+
+  <!-- Toast Notification Container (replaces alert()) -->
+  <div id="toast-container" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none"></div>
+
+  <script>
+    /**
+     * KettleForge Icon Studio
+     * Standalone vector logo customizer & Android Studio asset exporter.
+     */
+
+    // =========================================================================
+    // 1. APPLICATION STATE & PRESETS
+    // =========================================================================
+    const DEFAULT_STATE = {
+      bg: '#1C2327',
+      transparentBg: false,
+      kettle: '#C92B29',
+      flame: '#D8A84E',
+      popcorn: '#FBF3D5',
+      shading: true,
+      scale: 85,        // percentage (50 - 110)
+      offsetY: 0,       // pixels in 512 viewBox (-60 - 60)
+      previewShape: 'rounded', // 'square' | 'rounded' | 'circle' | 'foreground'
+      safeZone: false,
+      wallpaperMode: 'dark'
+    };
+
+    const state = { ...DEFAULT_STATE };
+
+    const COLOR_PRESETS = [
+      {
+        name: 'Forge Classic',
+        bg: '#1C2327',
+        kettle: '#C92B29',
+        flame: '#D8A84E',
+        popcorn: '#FBF3D5',
+        shading: true,
+        transparentBg: false
+      },
+      {
+        name: 'Pitch Black',
+        bg: '#0E0E10',
+        kettle: '#C92B29',
+        flame: '#D8A84E',
+        popcorn: '#FBF3D5',
+        shading: true,
+        transparentBg: false
+      },
+      {
+        name: 'Obsidian & Ember',
+        bg: '#121316',
+        kettle: '#E03B24',
+        flame: '#F2B84B',
+        popcorn: '#FFF6DE',
+        shading: true,
+        transparentBg: false
+      },
+      {
+        name: 'Crisp Light',
+        bg: '#F5F3EE',
+        kettle: '#C92B29',
+        flame: '#D49830',
+        popcorn: '#EBD9A7',
+        shading: true,
+        transparentBg: false
+      },
+      {
+        name: 'Mono White',
+        bg: '#14181B',
+        kettle: '#FFFFFF',
+        flame: '#FFFFFF',
+        popcorn: '#FFFFFF',
+        shading: false,
+        transparentBg: false
+      },
+      {
+        name: 'Mono Gold',
+        bg: '#14181B',
+        kettle: '#D8A84E',
+        flame: '#D8A84E',
+        popcorn: '#D8A84E',
+        shading: false,
+        transparentBg: false
+      }
+    ];
+
+    // =========================================================================
+    // 2. COLOR UTILITIES
+    // =========================================================================
+
+    /**
+     * Normalizes a hex color string to #RRGGBB or returns null if invalid.
+     */
+    function normalizeHex(input) {
+      if (!input) return null;
+      let hex = input.trim().replace(/^#/, '');
+      if (/^[0-9a-fA-F]{3}$/.test(hex)) {
+        hex = hex.split('').map(c => c + c).join('');
+      }
+      if (/^[0-9a-fA-F]{6}$/.test(hex)) {
+        return '#' + hex.toUpperCase();
+      }
+      return null;
+    }
+
+    /**
+     * Darkens a hex color by a factor (0 to 1) for automatic subtle shading accents.
+     */
+    function darkenHex(hex, amount = 0.16) {
+      const valid = normalizeHex(hex) || '#000000';
+      const num = parseInt(valid.slice(1), 16);
+      let r = (num >> 16) & 255;
+      let g = (num >> 8) & 255;
+      let b = num & 255;
+
+      r = Math.max(0, Math.round(r * (1 - amount)));
+      g = Math.max(0, Math.round(g * (1 - amount)));
+      b = Math.max(0, Math.round(b * (1 - amount)));
+
+      return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+    }
+
+    // =========================================================================
+    // 3. EXACT KETTLEFORGE SVG GENERATOR
+    // =========================================================================
+
+    /**
+     * Builds the complete, standalone SVG string for the KettleForge logo.
+     * Uses SVG <mask> for both the kettle-flame gap and inner flame negative space
+     * so transparent exports have genuine transparent cutouts.
+     *
+     * @param {Object} opts
+     * @param {string} opts.shape - 'square' | 'rounded' | 'circle' | 'foreground'
+     * @param {string} opts.idPrefix - Unique prefix to avoid DOM mask/clipPath ID collisions
+     * @param {number} [opts.exportSize] - Optional explicit width/height attributes for exported files
+     * @param {boolean} [opts.forceBackgroundOnly] - If true, renders only solid background (for adaptive background)
+     */
+    function buildLogoSVG(opts = {}) {
+      const shape = opts.shape || state.previewShape;
+      const prefix = opts.idPrefix || 'kf';
+      const isForeground = shape === 'foreground';
+      const showBg = !isForeground && !state.transparentBg;
+
+      const kettleColor = state.kettle;
+      const kettleShade = darkenHex(kettleColor, 0.20);
+      const flameColor = state.flame;
+      const popcornColor = state.popcorn;
+      const popcornShade = darkenHex(popcornColor, 0.14);
+
+      const scaleFactor = state.scale / 100;
+      const offsetY = state.offsetY;
+
+      // Unique SVG definition IDs
+      const clipId = `${prefix}-shape-clip`;
+      const kettleMaskId = `${prefix}-kettle-mask`;
+      const flameMaskId = `${prefix}-flame-mask`;
+
+      // Clip path geometry based on icon shape
+      let clipShapeMarkup = '';
+      if (shape === 'circle') {
+        clipShapeMarkup = `<circle cx="256" cy="256" r="256" />`;
+      } else if (shape === 'rounded') {
+        clipShapeMarkup = `<rect x="0" y="0" width="512" height="512" rx="112" ry="112" />`;
+      } else {
+        clipShapeMarkup = `<rect x="0" y="0" width="512" height="512" />`;
+      }
+
+      // Reusable exact flame outer path (5 upward flame tongues cradling the cauldron)
+      const flameOuterPath = `
+        M 152 332
+        C 146 376, 174 418, 240 426
+        C 250 427, 262 427, 272 426
+        C 338 418, 366 376, 360 332
+        C 351 352, 336 364, 323 367
+        C 320 353, 313 338, 302 329
+        C 296 344, 289 354, 281 360
+        C 280 332, 267 311, 248 298
+        C 246 320, 236 341, 223 356
+        C 220 344, 215 334, 206 327
+        C 200 342, 193 355, 187 365
+        C 172 359, 159 348, 152 332
+        Z
+      `.replace(/\s+/g, ' ').trim();
+
+      // Negative-space inner flame cutout rising from bottom center (3-pronged cutout splitting the bottom tip)
+      const innerFlameCutoutPath = `
+        M 244 432
+        C 231 417, 223 402, 224 384
+        C 232 391, 238 395, 244 397
+        C 243 379, 249 366, 258 355
+        C 265 369, 270 382, 269 396
+        C 276 393, 282 389, 288 383
+        C 290 401, 281 417, 268 432
+        Z
+      `.replace(/\s+/g, ' ').trim();
+
+      // Plump 3-lobed popcorn silhouette centered at (0,0) for clean reuse across all 3 popcorns
+      const popcornBasePath = `
+        M 0 -30
+        C 12 -30, 19 -20, 17 -10
+        C 28 -8, 33 4, 27 15
+        C 22 25, 9 27, 0 21
+        C -9 27, -22 25, -27 15
+        C -33 4, -28 -8, -17 -10
+        C -19 -20, -12 -30, 0 -30
+        Z
+      `.replace(/\s+/g, ' ').trim();
+
+      // Subtle inner lobe shading accent for popcorn (only rendered when Subtle Shading is enabled)
+      const popcornShadePath = `
+        M -15 -7
+        C -10 -2, -5 -3, -2 -7
+        C -8 -1, -13 4, -18 12
+        C -22 7, -22 -2, -15 -7
+        Z
+        M 14 2
+        C 19 8, 17 17, 7 20
+        C 12 15, 14 9, 11 4
+        Z
+        M -7 18
+        C -3 20, 3 20, 7 18
+        C 3 22, -3 22, -7 18
+        Z
+      `.replace(/\s+/g, ' ').trim();
+
+      // Cauldron Kettle silhouette: flared rounded rim, tapered neck, round sturdy belly
+      const kettlePath = `
+        M 174 212
+        L 338 212
+        C 345 212, 349 216, 349 221
+        C 349 226, 345 230, 339 231
+        C 334 233, 332 240, 333 248
+        C 346 266, 352 287, 350 310
+        C 346 349, 310 378, 256 378
+        C 202 378, 166 349, 162 310
+        C 160 287, 166 266, 179 248
+        C 180 240, 178 233, 173 231
+        C 167 230, 163 226, 163 221
+        C 163 216, 167 212, 174 212
+        Z
+      `.replace(/\s+/g, ' ').trim();
+
+      // Subtle under-rim shadow wedge tucked directly beneath the cauldron lip
+      const kettleUnderRimShadePath = `
+        M 174 230
+        L 296 230
+        C 258 237, 214 242, 179 246
+        C 180 239, 178 233, 174 230
+        Z
+      `.replace(/\s+/g, ' ').trim();
+
+      const sizeAttrs = opts.exportSize
+        ? `width="${opts.exportSize}" height="${opts.exportSize}"`
+        : `class="w-full h-full block"`;
+
+      // If generating Adaptive Background only (solid square color)
+      if (opts.forceBackgroundOnly) {
+        return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" ${sizeAttrs}>
+  <rect x="0" y="0" width="512" height="512" fill="${state.bg}" />
+</svg>`;
+      }
+
+      // Build the logo group with scale & vertical offset centered around (256, 256)
+      const transformAttr = `translate(256 ${256 + offsetY}) scale(${scaleFactor.toFixed(3)}) translate(-256 -256)`;
+
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" ${sizeAttrs}>
+  <defs>
+    <clipPath id="${clipId}">
+      ${clipShapeMarkup}
+    </clipPath>
+
+    <!-- Mask for Cauldron: carves a true transparent gap where the flame overlaps the kettle -->
+    <mask id="${kettleMaskId}" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+      <rect x="0" y="0" width="512" height="512" fill="white" />
+      <path d="${flameOuterPath}" fill="black" stroke="black" stroke-width="15" stroke-linejoin="round" />
+    </mask>
+
+    <!-- Mask for Flame: carves the negative-space inner flame cutout for true transparency -->
+    <mask id="${flameMaskId}" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+      <rect x="0" y="0" width="512" height="512" fill="white" />
+      <path d="${innerFlameCutoutPath}" fill="black" />
+    </mask>
+  </defs>
+
+  <g clip-path="url(#${clipId})">
+    ${showBg ? `<rect x="0" y="0" width="512" height="512" fill="${state.bg}" />` : ''}
+
+    <!-- KettleForge Mark Group -->
+    <g transform="${transformAttr}">
+
+      <!-- 1. Three Popping Popcorns (Balanced Arc) -->
+      <g id="popcorns">
+        <!-- Top-Center Popcorn (slightly larger) -->
+        <g transform="translate(256 126) scale(1.06)">
+          <path d="${popcornBasePath}" fill="${popcornColor}" />
+          ${state.shading ? `<path d="${popcornShadePath}" fill="${popcornShade}" />` : ''}
+        </g>
+
+        <!-- Left Popcorn (angled outward left) -->
+        <g transform="translate(178 168) rotate(-22) scale(0.95)">
+          <path d="${popcornBasePath}" fill="${popcornColor}" />
+          ${state.shading ? `<path d="${popcornShadePath}" fill="${popcornShade}" />` : ''}
+        </g>
+
+        <!-- Right Popcorn (angled outward right) -->
+        <g transform="translate(334 168) rotate(24) scale(0.95)">
+          <path d="${popcornBasePath}" fill="${popcornColor}" />
+          ${state.shading ? `<path d="${popcornShadePath}" fill="${popcornShade}" />` : ''}
+        </g>
+      </g>
+
+      <!-- 2. Cauldron Kettle (Masked by Flame Gap) -->
+      <g id="kettle" mask="url(#${kettleMaskId})">
+        <path d="${kettlePath}" fill="${kettleColor}" />
+        ${state.shading ? `<path d="${kettleUnderRimShadePath}" fill="${kettleShade}" />` : ''}
+      </g>
+
+      <!-- 3. Flame Underneath (Masked by Inner Negative-Space Cutout) -->
+      <g id="flame" mask="url(#${flameMaskId})">
+        <path d="${flameOuterPath}" fill="${flameColor}" />
+      </g>
+
+    </g>
+  </g>
+</svg>`;
+    }
+
+    // =========================================================================
+    // 4. RENDERING & UI SYNC
+    // =========================================================================
+
+    function renderAllPreviews() {
+      // Main Preview
+      const mainContainer = document.getElementById('main-preview-container');
+      mainContainer.innerHTML = buildLogoSVG({
+        shape: state.previewShape,
+        idPrefix: 'main'
+      });
+
+      // Header Mini Badge
+      document.getElementById('header-badge').innerHTML = buildLogoSVG({
+        shape: 'rounded',
+        idPrefix: 'hdr'
+      });
+
+      // Android Launcher Mini Previews
+      document.getElementById('mini-circle').innerHTML = buildLogoSVG({
+        shape: 'circle',
+        idPrefix: 'mini-c'
+      });
+      document.getElementById('mini-rounded').innerHTML = buildLogoSVG({
+        shape: 'rounded',
+        idPrefix: 'mini-r'
+      });
+      document.getElementById('mini-square').innerHTML = buildLogoSVG({
+        shape: 'square',
+        idPrefix: 'mini-s'
+      });
+      document.getElementById('mini-small').innerHTML = buildLogoSVG({
+        shape: 'rounded',
+        idPrefix: 'mini-sm'
+      });
+
+      // Update palette indicator dots
+      const chips = document.getElementById('preview-palette-chips');
+      const bgChip = state.transparentBg || state.previewShape === 'foreground'
+        ? `<span class="w-3.5 h-3.5 rounded-full checkerboard-sm ring-1 ring-white/25" title="Transparent Background"></span>`
+        : `<span class="w-3.5 h-3.5 rounded-full ring-1 ring-white/25" style="background:${state.bg}" title="Background: ${state.bg}"></span>`;
+
+      chips.innerHTML = `
+        ${bgChip}
+        <span class="w-3.5 h-3.5 rounded-full ring-1 ring-white/25" style="background:${state.kettle}" title="Kettle: ${state.kettle}"></span>
+        <span class="w-3.5 h-3.5 rounded-full ring-1 ring-white/25" style="background:${state.flame}" title="Flame: ${state.flame}"></span>
+        <span class="w-3.5 h-3.5 rounded-full ring-1 ring-white/25" style="background:${state.popcorn}" title="Popcorn: ${state.popcorn}"></span>
+      `;
+
+      // Update active shape tabs styling
+      document.querySelectorAll('.shape-tab').forEach(btn => {
+        const active = btn.dataset.shape === state.previewShape;
+        btn.className = `shape-tab px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-all ${
+          active
+            ? 'bg-forgeGold text-canvas font-semibold shadow-sm'
+            : 'text-slate-400 hover:text-white hover:bg-cardHover'
+        }`;
+      });
+
+      // Safe zone overlay visibility
+      const overlay = document.getElementById('safezone-overlay');
+      if (state.safeZone) {
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+      } else {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+      }
+
+      // Sync slider value labels
+      document.getElementById('val-scale').textContent = `${state.scale}%`;
+      document.getElementById('val-offset-y').textContent = `${state.offsetY > 0 ? '+' : ''}${state.offsetY}px`;
+    }
+
+    function syncInputsFromState() {
+      const pairs = [
+        ['bg', 'picker-bg', 'hex-bg'],
+        ['kettle', 'picker-kettle', 'hex-kettle'],
+        ['flame', 'picker-flame', 'hex-flame'],
+        ['popcorn', 'picker-popcorn', 'hex-popcorn']
+      ];
+      pairs.forEach(([key, pickerId, hexId]) => {
+        document.getElementById(pickerId).value = state[key];
+        document.getElementById(hexId).value = state[key];
+      });
+
+      document.getElementById('toggle-transparent').checked = state.transparentBg;
+      document.getElementById('picker-bg').disabled = state.transparentBg;
+      document.getElementById('hex-bg').disabled = state.transparentBg;
+      document.getElementById('picker-bg').classList.toggle('opacity-40', state.transparentBg);
+      document.getElementById('hex-bg').classList.toggle('opacity-40', state.transparentBg);
+
+      document.getElementById('toggle-shading').checked = state.shading;
+      document.getElementById('toggle-safezone').checked = state.safeZone;
+      document.getElementById('slider-scale').value = state.scale;
+      document.getElementById('slider-offset-y').value = state.offsetY;
+    }
+
+    function renderPresetSwatches() {
+      const grid = document.getElementById('presets-grid');
+      grid.innerHTML = '';
+      COLOR_PRESETS.forEach((preset) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'group flex flex-col gap-1.5 p-2.5 rounded-xl bg-canvas hover:bg-cardHover border border-borderSubtle hover:border-forgeGold/60 transition-all text-left';
+        btn.innerHTML = `
+          <div class="flex items-center gap-1">
+            <span class="w-4 h-4 rounded-md ring-1 ring-white/15" style="background:${preset.bg}"></span>
+            <span class="w-4 h-4 rounded-md ring-1 ring-white/15" style="background:${preset.kettle}"></span>
+            <span class="w-4 h-4 rounded-md ring-1 ring-white/15" style="background:${preset.flame}"></span>
+            <span class="w-4 h-4 rounded-md ring-1 ring-white/15" style="background:${preset.popcorn}"></span>
+          </div>
+          <span class="text-[11px] font-medium text-slate-300 group-hover:text-white truncate w-full">${preset.name}</span>
+        `;
+        btn.addEventListener('click', () => {
+          state.bg = preset.bg;
+          state.kettle = preset.kettle;
+          state.flame = preset.flame;
+          state.popcorn = preset.popcorn;
+          state.shading = preset.shading;
+          state.transparentBg = preset.transparentBg;
+          syncInputsFromState();
+          renderAllPreviews();
+          showToast(`Applied "${preset.name}" preset`);
+        });
+        grid.appendChild(btn);
+      });
+    }
+
+    // =========================================================================
+    // 5. TOAST NOTIFICATIONS (NO alert())
+    // =========================================================================
+    let toastTimer = null;
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const borderClass = type === 'error' ? 'border-red-500/50 text-red-200' : 'border-forgeGold/50 text-white';
+      container.innerHTML = `
+        <div class="toast-enter bg-[#161C20]/95 backdrop-blur-md border ${borderClass} px-4 py-2.5 rounded-xl shadow-2xl text-xs sm:text-sm font-medium flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full ${type === 'error' ? 'bg-red-500' : 'bg-forgeGold'}"></span>
+          <span>${message}</span>
+        </div>
+      `;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        container.innerHTML = '';
+      }, 2800);
+    }
+
+    // =========================================================================
+    // 6. EXPORT ENGINE (PNG, SVG, ANDROID STUDIO .ZIP)
+    // =========================================================================
+
+    /**
+     * Converts an SVG markup string to a PNG Blob rendered cleanly at exact pixel dimensions.
+     */
+    function svgToPngBlob(svgString, size) {
+      return new Promise((resolve, reject) => {
+        try {
+          const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+          const url = URL.createObjectURL(svgBlob);
+          const img = new Image();
+          img.onload = () => {
+            try {
+              const canvas = document.createElement('canvas');
+              canvas.width = size;
+              canvas.height = size;
+              const ctx = canvas.getContext('2d');
+              ctx.clearRect(0, 0, size, size);
+              ctx.imageSmoothingEnabled = true;
+              ctx.imageSmoothingQuality = 'high';
+              ctx.drawImage(img, 0, 0, size, size);
+              URL.revokeObjectURL(url);
+              canvas.toBlob((blob) => {
+                if (blob) resolve(blob);
+                else reject(new Error('Canvas failed to export PNG blob.'));
+              }, 'image/png');
+            } catch (err) {
+              URL.revokeObjectURL(url);
+              reject(err);
+            }
+          };
+          img.onerror = (err) => {
+            URL.revokeObjectURL(url);
+            reject(new Error('Failed to load SVG into image renderer.'));
+          };
+          img.src = url;
+        } catch (err) {
+          reject(err);
+        }
+      });
+    }
+
+    /**
+     * Triggers a browser file download from a Blob.
+     */
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    /**
+     * Exports a single PNG at the chosen shape and resolution.
+     */
+    async function handleSinglePngExport() {
+      const shape = document.getElementById('export-shape').value;
+      const size = parseInt(document.getElementById('export-size').value, 10) || 512;
+      try {
+        const svgStr = buildLogoSVG({ shape, idPrefix: 'exp', exportSize: size });
+        const blob = await svgToPngBlob(svgStr, size);
+        downloadBlob(blob, `kettleforge-${shape}-${size}x${size}.png`);
+        showToast(`Downloaded ${shape} PNG (${size}×${size})`);
+      } catch (err) {
+        console.error(err);
+        showToast('PNG export failed. Please try again.', 'error');
+      }
+    }
+
+    /**
+     * Exports a clean standalone SVG file.
+     */
+    function handleSingleSvgExport() {
+      const shape = document.getElementById('export-shape').value;
+      try {
+        const svgStr = buildLogoSVG({ shape, idPrefix: 'kettleforge', exportSize: 512 });
+        const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+        downloadBlob(blob, `kettleforge-${shape}.svg`);
+        showToast(`Downloaded standalone ${shape} SVG`);
+      } catch (err) {
+        console.error(err);
+        showToast('SVG export failed.', 'error');
+      }
+    }
+
+    /**
+     * Generates and downloads a complete Android Studio Icon Pack .ZIP archive.
+     */
+    async function handleAndroidZipExport() {
+      if (typeof JSZip === 'undefined') {
+        showToast('JSZip library not loaded. Check internet connection.', 'error');
+        return;
+      }
+
+      const zipBtn = document.getElementById('btn-export-zip');
+      const zipBtnText = document.getElementById('zip-btn-text');
+      const headerZipBtn = document.getElementById('btn-header-zip');
+
+      zipBtn.disabled = true;
+      headerZipBtn.disabled = true;
+      zipBtnText.textContent = 'Generating Android Pack...';
+
+      try {
+        const zip = new JSZip();
+
+        // 1. Play Store Icon (512x512 square)
+        const playStoreSvg = buildLogoSVG({ shape: 'square', idPrefix: 'ps', exportSize: 512 });
+        zip.file('playstore-icon-512x512.png', await svgToPngBlob(playStoreSvg, 512));
+
+        // 2. Adaptive Icon Layers (432x432)
+        const adaptiveFgSvg = buildLogoSVG({ shape: 'foreground', idPrefix: 'afg', exportSize: 432 });
+        const adaptiveBgSvg = buildLogoSVG({ forceBackgroundOnly: true, exportSize: 432 });
+        zip.file('adaptive/ic_launcher_foreground.png', await svgToPngBlob(adaptiveFgSvg, 432));
+        zip.file('adaptive/ic_launcher_background.png', await svgToPngBlob(adaptiveBgSvg, 432));
+
+        // 3. Mipmap densities (square + round)
+        const densities = [
+          { folder: 'mipmap-mdpi', size: 48 },
+          { folder: 'mipmap-hdpi', size: 72 },
+          { folder: 'mipmap-xhdpi', size: 96 },
+          { folder: 'mipmap-xxhdpi', size: 144 },
+          { folder: 'mipmap-xxxhdpi', size: 192 }
+        ];
+
+        for (const d of densities) {
+          const sqSvg = buildLogoSVG({ shape: 'square', idPrefix: `sq-${d.size}`, exportSize: d.size });
+          const rdSvg = buildLogoSVG({ shape: 'circle', idPrefix: `rd-${d.size}`, exportSize: d.size });
+
+          const sqBlob = await svgToPngBlob(sqSvg, d.size);
+          const rdBlob = await svgToPngBlob(rdSvg, d.size);
+
+          zip.file(`res/${d.folder}/ic_launcher.png`, sqBlob);
+          zip.file(`res/${d.folder}/ic_launcher_round.png`, rdBlob);
+        }
+
+        // 4. Clean standalone vector SVG
+        const vectorSvg = buildLogoSVG({
+          shape: state.transparentBg ? 'foreground' : 'square',
+          idPrefix: 'kettleforge',
+          exportSize: 512
+        });
+        zip.file('vector/logo.svg', vectorSvg);
+
+        // Generate and trigger download
+        const content = await zip.generateAsync({ type: 'blob' });
+        downloadBlob(content, 'kettleforge-android-icons.zip');
+        showToast('Android Icon Pack (.ZIP) downloaded!');
+      } catch (err) {
+        console.error(err);
+        showToast('Error generating ZIP archive.', 'error');
+      } finally {
+        zipBtn.disabled = false;
+        headerZipBtn.disabled = false;
+        zipBtnText.textContent = 'Download Android App Icon Pack (.ZIP)';
+      }
+    }
+
+    // =========================================================================
+    // 7. EVENT LISTENERS & INITIALIZATION
+    // =========================================================================
+
+    function bindColorControl(stateKey, pickerId, hexId) {
+      const picker = document.getElementById(pickerId);
+      const hexInput = document.getElementById(hexId);
+
+      picker.addEventListener('input', (e) => {
+        state[stateKey] = e.target.value.toUpperCase();
+        hexInput.value = state[stateKey];
+        renderAllPreviews();
+      });
+
+      hexInput.addEventListener('input', (e) => {
+        const normalized = normalizeHex(e.target.value);
+        if (normalized) {
+          state[stateKey] = normalized;
+          picker.value = normalized;
+          renderAllPreviews();
+        }
+      });
+
+      hexInput.addEventListener('blur', () => {
+        hexInput.value = state[stateKey];
+      });
+    }
+
+    function init() {
+      // Bind 4 color controls
+      bindColorControl('bg', 'picker-bg', 'hex-bg');
+      bindColorControl('kettle', 'picker-kettle', 'hex-kettle');
+      bindColorControl('flame', 'picker-flame', 'hex-flame');
+      bindColorControl('popcorn', 'picker-popcorn', 'hex-popcorn');
+
+      // Transparent Background toggle
+      document.getElementById('toggle-transparent').addEventListener('change', (e) => {
+        state.transparentBg = e.target.checked;
+        syncInputsFromState();
+        renderAllPreviews();
+      });
+
+      // Subtle Shading toggle
+      document.getElementById('toggle-shading').addEventListener('change', (e) => {
+        state.shading = e.target.checked;
+        renderAllPreviews();
+      });
+
+      // Adaptive Safe Zone overlay toggle
+      document.getElementById('toggle-safezone').addEventListener('change', (e) => {
+        state.safeZone = e.target.checked;
+        renderAllPreviews();
+      });
+
+      // Shape tabs
+      document.querySelectorAll('.shape-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.previewShape = btn.dataset.shape;
+          // Mirror shape into export selector for convenience
+          document.getElementById('export-shape').value = state.previewShape;
+          renderAllPreviews();
+        });
+      });
+
+      // Scale & Vertical Offset sliders
+      document.getElementById('slider-scale').addEventListener('input', (e) => {
+        state.scale = parseInt(e.target.value, 10);
+        renderAllPreviews();
+      });
+
+      document.getElementById('slider-offset-y').addEventListener('input', (e) => {
+        state.offsetY = parseInt(e.target.value, 10);
+        renderAllPreviews();
+      });
+
+      // Center framing shortcut
+      document.getElementById('btn-center-frame').addEventListener('click', () => {
+        state.scale = DEFAULT_STATE.scale;
+        state.offsetY = DEFAULT_STATE.offsetY;
+        syncInputsFromState();
+        renderAllPreviews();
+      });
+
+      // Reset Defaults
+      document.getElementById('btn-reset').addEventListener('click', () => {
+        Object.assign(state, DEFAULT_STATE);
+        document.getElementById('export-shape').value = state.previewShape;
+        syncInputsFromState();
+        renderAllPreviews();
+        showToast('Reset to Forge Classic defaults');
+      });
+
+      // Simulated Wallpaper Dark/Light Toggle
+      const strip = document.getElementById('launcher-strip');
+      const wpDarkBtn = document.getElementById('wp-dark');
+      const wpLightBtn = document.getElementById('wp-light');
+
+      function setWallpaper(mode) {
+        state.wallpaperMode = mode;
+        const labels = strip.querySelectorAll('.launcher-label');
+        if (mode === 'light') {
+          strip.className = 'rounded-xl p-5 sm:p-6 border border-borderSubtle transition-colors duration-200 bg-gradient-to-br from-[#e2e8f0] via-[#f1f5f9] to-[#cbd5e1]';
+          labels.forEach(l => {
+            l.classList.remove('text-slate-200');
+            l.classList.add('text-slate-800');
+          });
+          wpLightBtn.className = 'px-2.5 py-1 rounded-lg font-medium transition-colors bg-cardHover text-white';
+          wpDarkBtn.className = 'px-2.5 py-1 rounded-lg font-medium transition-colors text-slate-400 hover:text-white';
+        } else {
+          strip.className = 'rounded-xl p-5 sm:p-6 border border-borderSubtle transition-colors duration-200 bg-gradient-to-br from-[#0f1419] via-[#17202a] to-[#111518]';
+          labels.forEach(l => {
+            l.classList.remove('text-slate-800');
+            l.classList.add('text-slate-200');
+          });
+          wpDarkBtn.className = 'px-2.5 py-1 rounded-lg font-medium transition-colors bg-cardHover text-white';
+          wpLightBtn.className = 'px-2.5 py-1 rounded-lg font-medium transition-colors text-slate-400 hover:text-white';
+        }
+      }
+
+      wpDarkBtn.addEventListener('click', () => setWallpaper('dark'));
+      wpLightBtn.addEventListener('click', () => setWallpaper('light'));
+
+      // Export Buttons
+      document.getElementById('btn-download-png').addEventListener('click', handleSinglePngExport);
+      document.getElementById('btn-download-svg').addEventListener('click', handleSingleSvgExport);
+      document.getElementById('btn-export-zip').addEventListener('click', handleAndroidZipExport);
+      document.getElementById('btn-header-zip').addEventListener('click', handleAndroidZipExport);
+
+      // Initial render
+      renderPresetSwatches();
+      syncInputsFromState();
+      renderAllPreviews();
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
