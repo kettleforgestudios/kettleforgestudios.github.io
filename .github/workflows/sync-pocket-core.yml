@@ -1,0 +1,110 @@
+# Keeps the browser Pocket / Pocket Color WebAssembly core (assets/play/pocket.{js,wasm})
+# in step with Kernelcade's latest release in CrazyLegsMalone/kernel-lesion-snes.
+#
+# Every Kernelcade build attaches pocket.js and pocket.wasm to its dev-N / build-N
+# release after passing its headless smoke test. Because kernel-lesion-snes is a
+# private repository, this workflow uses a read-only personal access token stored
+# as the repository secret KERNELCADE_READ_TOKEN (Fine-grained PAT on CrazyLegsMalone
+# with "Contents: Read-only" on kernel-lesion-snes). If that secret is not set yet,
+# the workflow exits cleanly without failing CI.
+name: Sync Pocket Core
+
+on:
+  schedule:
+    - cron: "47 * * * *" # every hour, at 47 minutes past
+  workflow_dispatch:
+
+permissions:
+  contents: write # commit updated pocket.js / pocket.wasm
+  pages: write # ask Pages to rebuild
+
+concurrency:
+  group: sync-pocket-core
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download newest pocket.js and pocket.wasm from Kernelcade
+        id: fetch
+        env:
+          GH_TOKEN: ${{ secrets.KERNELCADE_READ_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "::notice::KERNELCADE_READ_TOKEN secret is not set yet; skipping automatic core sync."
+            echo "skipped=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          REPO=CrazyLegsMalone/kernel-lesion-snes
+          TAG="$(gh release list -R "$REPO" --limit 20 --json tagName --jq '.[0].tagName')"
+          if [ -z "$TAG" ]; then
+            echo "::notice::No releases found in $REPO."
+            echo "skipped=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "Checking release $TAG in $REPO..."
+          mkdir -p /tmp/new-core
+          if ! gh release download "$TAG" -R "$REPO" -p "pocket.js" -p "pocket.wasm" -D /tmp/new-core --clobber; then
+            echo "::notice::Release $TAG does not have pocket.js / pocket.wasm attached yet."
+            echo "skipped=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "skipped=false" >> "$GITHUB_OUTPUT"
+
+      - name: Smoke-test downloaded core with Kernel Drop
+        if: steps.fetch.outputs.skipped != 'true'
+        run: |
+          node --input-type=module - <<'EOF'
+          import fs from 'node:fs';
+          import vm from 'node:vm';
+          const js = fs.readFileSync('/tmp/new-core/pocket.js', 'utf8');
+          const wasm = fs.readFileSync('/tmp/new-core/pocket.wasm');
+          const rom = fs.readFileSync('assets/play/kernel-drop.gb');
+          const sb = {
+            console, TextDecoder, TextEncoder, WebAssembly,
+            Uint8Array, Int8Array, Uint16Array, Int16Array, Uint32Array, Int32Array,
+            Float32Array, Float64Array, ArrayBuffer, DataView, Math, Date, performance,
+            setTimeout, clearTimeout, URL,
+            location: { href: 'https://kettleforgestudios.com/play' },
+            document: { currentScript: { src: 'https://kettleforgestudios.com/assets/play/pocket.js' } },
+          };
+          sb.self = sb; sb.window = sb;
+          vm.createContext(sb);
+          vm.runInContext(js, sb);
+          const mod = await sb.createPocketCore({ wasmBinary: wasm });
+          mod._kc_init();
+          const ptr = mod._kc_alloc(rom.length);
+          mod.HEAPU8.set(rom, ptr);
+          if (mod._kc_load_rom(ptr, rom.length) !== 1) throw new Error('kc_load_rom failed');
+          mod._kc_free(ptr);
+          for (let i = 0; i < 60; i++) mod._kc_run_frame();
+          if (mod._kc_frame_width() !== 160 || mod._kc_frame_height() !== 144) throw new Error('bad dims');
+          console.log('Core OK:', wasm.length, 'bytes');
+          EOF
+
+      - name: Commit if changed, then republish
+        if: steps.fetch.outputs.skipped != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REL_TAG: ${{ steps.fetch.outputs.tag }}
+        run: |
+          set -euo pipefail
+          if cmp -s /tmp/new-core/pocket.js assets/play/pocket.js && cmp -s /tmp/new-core/pocket.wasm assets/play/pocket.wasm; then
+            echo "Pocket WebAssembly core is already up to date."
+            exit 0
+          fi
+          chmod 644 /tmp/new-core/pocket.js /tmp/new-core/pocket.wasm
+          mv /tmp/new-core/pocket.js assets/play/pocket.js
+          mv /tmp/new-core/pocket.wasm assets/play/pocket.wasm
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/play/pocket.js assets/play/pocket.wasm
+          git commit -m "Update Pocket WebAssembly core from Kernelcade ${REL_TAG}"
+          git push
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/pages/builds" || echo "::warning::Couldn't request a Pages build; it will update on the next push."
