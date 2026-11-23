@@ -22,8 +22,11 @@
   main { max-width: 760px; margin: 0 auto; padding: 20px 22px 40px; }
   .brand { text-align: center; margin-bottom: 48px; }
   .kettle { height: 132px; width: auto; display: block; margin: 0 auto 14px; }
+  /* Title font: Bebas Neue (SIL Open Font License, see assets/fonts/bebas-neue-OFL.txt). Self-hosted. */
+  @font-face { font-family: "Bebas Neue"; src: url("assets/fonts/bebas-neue.woff2") format("woff2"); font-display: swap; }
   h1 {
-    margin: 0; font-size: clamp(36px, 9vw, 58px); letter-spacing: .04em;
+    margin: 0; font-family: "Bebas Neue", system-ui, sans-serif; font-weight: 400;
+    font-size: clamp(50px, 13vw, 80px); letter-spacing: .04em;
     text-transform: uppercase; line-height: 1.1;
   }
   h1 span {
