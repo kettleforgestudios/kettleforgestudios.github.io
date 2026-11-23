@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Kernelcade Pocket — Kettle Forge Studios</title>
-<meta name="description" content="Play Kernel Drop or your own .gb and .gbc files right in the browser. Pocket and Pocket Color web player by Kettle Forge Studios.">
+<meta name="description" content="Play Kettle Classics or your own .gb and .gbc files right in the browser. Pocket and Pocket Color web player by Kettle Forge Studios.">
 <meta name="theme-color" content="#14090A">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -723,6 +723,8 @@
       <div class="btn-grid">
         <button class="menu-btn primary" id="btnOpenRom" type="button">Open .gb / .gbc</button>
         <button class="menu-btn" id="btnLoadBuiltIn" type="button">Play Kernel Drop</button>
+        <a class="menu-btn" href="/#kettle-classics">Kettle Classics</a>
+        <p id="alphaControls" hidden>Fields of Silk: A anchors silk on green ground. Hold B to reel back. Select changes contrast. Start pauses or retries.</p>
       </div>
       <div class="btn-grid one" style="margin-top:8px;">
         <button class="menu-btn danger" id="btnReset" type="button">Reset System</button>
@@ -791,8 +793,11 @@
     A:      1 << 8,
   };
 
-  const BUILTIN_ROM_URL = 'assets/play/kernel-drop.gb';
-  const BUILTIN_ROM_NAME = 'Kernel Drop';
+  const fieldsOfSilk = new URLSearchParams(location.search).get('game') === 'fields-of-silk';
+  const BUILTIN_ROM_URL = fieldsOfSilk ? '/assets/play/fields-of-silk.gbc' : '/assets/play/kernel-drop.gb';
+  const BUILTIN_ROM_NAME = fieldsOfSilk ? 'Fields of Silk' : 'Kernel Drop';
+  document.getElementById('btnLoadBuiltIn').textContent = 'Play ' + BUILTIN_ROM_NAME;
+  document.getElementById('alphaControls').hidden = !fieldsOfSilk;
   const DB_NAME = 'kettlecade_pocket_v1';
   const DB_VERSION = 1;
   const MIN_ROM_BYTES = 0x4000;
@@ -1153,7 +1158,7 @@
       await loadRomBytes(new Uint8Array(buf), BUILTIN_ROM_NAME);
     } catch (err) {
       romTitleEl.textContent = 'Load failed';
-      showToast('Could not fetch built-in Kernel Drop ROM', 3500);
+      showToast('Could not fetch ' + BUILTIN_ROM_NAME, 3500);
       console.error(err);
     }
   }
