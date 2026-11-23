@@ -35,6 +35,14 @@
     padding-left: .55em; /* balances the trailing letter-space so it stays centered */
   }
   .tag { color: var(--dim); margin: 12px 0 0; font-size: 15px; }
+  .blurb { color: var(--dim); font-size: 15px; font-style: italic; }
+  .items { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); display: grid; gap: 14px; }
+  .item p { font-size: 15px; }
+  .state { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; border-radius: 999px; padding: 2px 9px; margin-bottom: 5px; }
+  .state.now { background: var(--gold); color: var(--bg); }
+  .state.soon { border: 1px solid var(--dim); color: var(--dim); }
+  .state.dev { border: 1px solid var(--gold); color: var(--gold); }
   .rule { width: 72px; height: 2px; border: 0; margin: 14px auto 0; background: var(--gold); opacity: .8; border-radius: 2px; }
   .card {
     background: var(--surface); border: 1px solid var(--line);
@@ -113,23 +121,37 @@ h2, h3 { font-family: "Bebas Neue", system-ui, sans-serif; font-weight: 400; let
   <div class="grid">
     <section class="card">
       <div class="sub-head"><img src="assets/brand/labs-icon.svg" alt=""><h3><a href="/husk-os/">Kettle Forge Labs</a></h3></div>
-      <p class="muted">Experiments and free, open software, from tiny
+      <p class="blurb">Experiments and free, open software, from tiny
         microcontroller systems to whatever pops next.</p>
-      <p style="margin-top:12px"><a href="/husk-os/">Explore Husk OS — free ESP32-S3 operating system</a></p>
-      <p class="muted" style="margin-top:12px"><strong>Coming later: Nibs</strong>, free add-on apps
-        for Husk OS. First up: <strong>CatEars.nib</strong>, which learns what your own cat's meows mean,
-        plus <strong>Zombie story.nib</strong> and <strong>Weather.nib</strong>.
-        <a href="/husk-os/#nibs">More</a></p>
+      <div class="items">
+        <div class="item">
+          <span class="state dev">In development</span>
+          <p><a href="/husk-os/">Husk OS</a>: free operating system for ESP32-S3 boards.</p>
+        </div>
+        <div class="item">
+          <span class="state soon">Coming later</span>
+          <p><strong>Nibs</strong>, free add-on apps for Husk OS: <strong>CatEars.nib</strong>,
+            which learns what your own cat's meows mean, plus <strong>Zombie story.nib</strong>
+            and <strong>Weather.nib</strong>. <a href="/husk-os/#nibs">More</a></p>
+        </div>
+      </div>
     </section>
     <section class="card">
       <div class="sub-head"><img src="assets/brand/kitchen-icon.svg" alt=""><h3>Kettle Forge Kitchen</h3></div>
-      <p class="muted">The workbench: tools we build to make our games and
+      <p class="blurb">The workbench: tools we build to make our games and
         apps, some of which we'll share.</p>
-      <p style="margin-top:12px"><a href="/qr">QR Code Generator</a>: free, offline, no ads.
-        Make QR codes for links, text and Wi-Fi.</p>
-      <p class="muted" style="margin-top:12px"><strong>Coming soon: ESP32-S3 Flasher</strong>, a free
-        in-browser tool to install firmware on ESP32-S3 boards: Husk OS or anything else.
-        Plug in, pick a file, flash. Nothing to install.</p>
+      <div class="items">
+        <div class="item">
+          <span class="state now">Available</span>
+          <p><a href="/qr">QR Code Generator</a>: free, offline, no ads. Make QR codes for
+            links, text and Wi-Fi.</p>
+        </div>
+        <div class="item">
+          <span class="state soon">Coming soon</span>
+          <p><strong>ESP32-S3 Flasher</strong>: free in-browser tool to install firmware on
+            ESP32-S3 boards, Husk OS or anything else. Plug in, pick a file, flash.</p>
+        </div>
+      </div>
     </section>
   </div>
 
