@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <clipPath id="kfs-shape-clip">
+      <rect x="0" y="0" width="512" height="512" rx="112" ry="112" />
+    </clipPath>
+
+    <!-- Mask for Cauldron: carves a true transparent gap where the flame overlaps the kettle -->
+    <mask id="kfs-kettle-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+      <rect x="0" y="0" width="512" height="512" fill="white" />
+      <path d="M 152 332 C 146 376, 174 418, 240 426 C 250 427, 262 427, 272 426 C 338 418, 366 376, 360 332 C 351 352, 336 364, 323 367 C 320 353, 313 338, 302 329 C 296 344, 289 354, 281 360 C 280 332, 267 311, 248 298 C 246 320, 236 341, 223 356 C 220 344, 215 334, 206 327 C 200 342, 193 355, 187 365 C 172 359, 159 348, 152 332 Z" fill="black" stroke="black" stroke-width="15" stroke-linejoin="round" />
+    </mask>
+
+    <!-- Mask for Flame: carves the negative-space inner flame cutout for true transparency -->
+    <mask id="kfs-flame-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+      <rect x="0" y="0" width="512" height="512" fill="white" />
+      <path d="M 244 432 C 231 417, 223 402, 224 384 C 232 391, 238 395, 244 397 C 243 379, 249 366, 258 355 C 265 369, 270 382, 269 396 C 276 393, 282 389, 288 383 C 290 401, 281 417, 268 432 Z" fill="black" />
+    </mask>
+  </defs>
+
+  <g clip-path="url(#kfs-shape-clip)">
+    <rect x="0" y="0" width="512" height="512" fill="#14090A" />
+
+    <!-- KettleForge Mark Group -->
+    <g transform="translate(256 256) scale(0.850) translate(-256 -256)">
+
+      <!-- 1. Three Popping Popcorns (Balanced Arc) -->
+      <g id="popcorns">
+        <!-- Top-Center Popcorn (slightly larger) -->
+        <g transform="translate(256 126) scale(1.06)">
+          <path d="M 0 -30 C 12 -30, 19 -20, 17 -10 C 28 -8, 33 4, 27 15 C 22 25, 9 27, 0 21 C -9 27, -22 25, -27 15 C -33 4, -28 -8, -17 -10 C -19 -20, -12 -30, 0 -30 Z" fill="#FFF7EC" />
+          <path d="M -15 -7 C -10 -2, -5 -3, -2 -7 C -8 -1, -13 4, -18 12 C -22 7, -22 -2, -15 -7 Z M 14 2 C 19 8, 17 17, 7 20 C 12 15, 14 9, 11 4 Z M -7 18 C -3 20, 3 20, 7 18 C 3 22, -3 22, -7 18 Z" fill="#DBD4CB" />
+        </g>
+
+        <!-- Left Popcorn (angled outward left) -->
+        <g transform="translate(178 168) rotate(-22) scale(0.95)">
+          <path d="M 0 -30 C 12 -30, 19 -20, 17 -10 C 28 -8, 33 4, 27 15 C 22 25, 9 27, 0 21 C -9 27, -22 25, -27 15 C -33 4, -28 -8, -17 -10 C -19 -20, -12 -30, 0 -30 Z" fill="#FFF7EC" />
+          <path d="M -15 -7 C -10 -2, -5 -3, -2 -7 C -8 -1, -13 4, -18 12 C -22 7, -22 -2, -15 -7 Z M 14 2 C 19 8, 17 17, 7 20 C 12 15, 14 9, 11 4 Z M -7 18 C -3 20, 3 20, 7 18 C 3 22, -3 22, -7 18 Z" fill="#DBD4CB" />
+        </g>
+
+        <!-- Right Popcorn (angled outward right) -->
+        <g transform="translate(334 168) rotate(24) scale(0.95)">
+          <path d="M 0 -30 C 12 -30, 19 -20, 17 -10 C 28 -8, 33 4, 27 15 C 22 25, 9 27, 0 21 C -9 27, -22 25, -27 15 C -33 4, -28 -8, -17 -10 C -19 -20, -12 -30, 0 -30 Z" fill="#FFF7EC" />
+          <path d="M -15 -7 C -10 -2, -5 -3, -2 -7 C -8 -1, -13 4, -18 12 C -22 7, -22 -2, -15 -7 Z M 14 2 C 19 8, 17 17, 7 20 C 12 15, 14 9, 11 4 Z M -7 18 C -3 20, 3 20, 7 18 C 3 22, -3 22, -7 18 Z" fill="#DBD4CB" />
+        </g>
+      </g>
+
+      <!-- 2. Cauldron Kettle (Masked by Flame Gap) -->
+      <g id="kettle" mask="url(#kfs-kettle-mask)">
+        <path d="M 174 212 L 338 212 C 345 212, 349 216, 349 221 C 349 226, 345 230, 339 231 C 334 233, 332 240, 333 248 C 346 266, 352 287, 350 310 C 346 349, 310 378, 256 378 C 202 378, 166 349, 162 310 C 160 287, 166 266, 179 248 C 180 240, 178 233, 173 231 C 167 230, 163 226, 163 221 C 163 216, 167 212, 174 212 Z" fill="#DC141E" />
+        <path d="M 174 230 L 296 230 C 258 237, 214 242, 179 246 C 180 239, 178 233, 174 230 Z" fill="#B01018" />
+      </g>
+
+      <!-- 3. Flame Underneath (Masked by Inner Negative-Space Cutout) -->
+      <g id="flame" mask="url(#kfs-flame-mask)">
+        <path d="M 152 332 C 146 376, 174 418, 240 426 C 250 427, 262 427, 272 426 C 338 418, 366 376, 360 332 C 351 352, 336 364, 323 367 C 320 353, 313 338, 302 329 C 296 344, 289 354, 281 360 C 280 332, 267 311, 248 298 C 246 320, 236 341, 223 356 C 220 344, 215 334, 206 327 C 200 342, 193 355, 187 365 C 172 359, 159 348, 152 332 Z" fill="#FFC933" />
+      </g>
+
+    </g>
+  </g>
+</svg>
