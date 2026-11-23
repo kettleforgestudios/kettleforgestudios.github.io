@@ -42,7 +42,7 @@ window.addEventListener('blur', () => {
 
 async function start() {
   try {
-    const response = await fetch('/assets/play/fields-of-silk.nes');
+    const response = await fetch('/assets/play/fields-of-silk.nes?build=2');
     if (!response.ok) throw new Error('ROM request failed: ' + response.status);
     player = new jsnes.Browser({
       container: gameScreen,
