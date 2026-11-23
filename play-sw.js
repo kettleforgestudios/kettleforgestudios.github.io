@@ -17,7 +17,7 @@
 // It is registered with scope "/play", so it never touches the rest of the site.
 
 // Bump this when the list below changes; old caches are deleted on activate.
-const CACHE = 'kernelcade-play-v2';
+const CACHE = 'kernelcade-play-v3';
 
 // Everything the player needs to boot with no network.
 const SHELL = [
