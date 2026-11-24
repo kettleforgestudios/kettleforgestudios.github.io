@@ -1,0 +1,16 @@
+{
+  "name": "Husk OS — Waveshare ESP32-S3-ePaper-1.54G V2",
+  "version": "Build 1",
+  "new_install_prompt_erase": false,
+  "builds": [
+    {
+      "chipFamily": "ESP32-S3",
+      "parts": [
+        {
+          "path": "downloads/HuskOS-Build-1-Waveshare-154G-V2-USB.bin",
+          "offset": 0
+        }
+      ]
+    }
+  ]
+}

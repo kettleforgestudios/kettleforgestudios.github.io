@@ -23,6 +23,10 @@ h1,h2{font-family:"Bebas Neue",system-ui,sans-serif;font-weight:400;letter-spaci
 </style>
 <link rel="stylesheet" href="/assets/bg/textures.css">
 <link rel="stylesheet" href="/assets/site.css">
+<script type="module" src="https://unpkg.com/esp-web-tools@10.5.2/dist/web/install-button.js?module"></script>
+<style>
+#flash esp-web-install-button { --esp-tools-button-color:var(--gold); --esp-tools-button-text-color:var(--bg); }
+</style>
 </head>
 <body class="tex-6">
 <script src="/assets/bg/textures.js"></script><main>
@@ -44,6 +48,21 @@ h1,h2{font-family:"Bebas Neue",system-ui,sans-serif;font-weight:400;letter-spaci
   <div class="card-body">
     <p><strong>Waveshare ESP32-S3-ePaper-1.54G V2</strong></p>
     <p>1.54-inch, 200 × 200 four-color e-paper display, two-button controls, Wi-Fi and device-specific firmware. Other ESP32-S3 boards may require different builds and hardware support.</p>
+  </div>
+</section>
+
+<section class="kf-card" id="flash">
+  <div class="card-head">
+    <h2>Flash Husk OS over USB</h2>
+  </div>
+  <div class="card-body">
+    <p>Installs <strong>Build 1</strong> on the <strong>Waveshare ESP32-S3-ePaper-1.54G V2</strong>. Flashing replaces the firmware and can reset saved settings. Check the board model before connecting.</p>
+    <p>Open this page in Chrome or Edge on a computer, or try Chrome on Android with USB host support. Connect the board with a USB data cable. If it doesn’t show up, unplug it, hold BOOT, and plug it back in.</p>
+    <esp-web-install-button manifest="/husk-os/build-1-flash.json">
+      <span slot="unsupported">USB flashing is unavailable in this browser. Use <a href="#downloads">the ZIP download</a> with a USB flasher.</span>
+      <span slot="not-allowed">Open this page over HTTPS to flash over USB.</span>
+    </esp-web-install-button>
+    <noscript><p>Enable JavaScript to flash over USB, or use <a href="#downloads">the ZIP download</a>.</p></noscript>
   </div>
 </section>
 
