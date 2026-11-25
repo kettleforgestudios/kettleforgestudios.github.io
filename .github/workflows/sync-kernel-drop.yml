@@ -62,7 +62,8 @@ jobs:
           from pathlib import Path
           page = Path("index.html")
           updated, count = re.subn(
-              r'(<span id="kernel-drop-version" class="state now">Beta · Build )[0-9]+(</span>)',
+              # Matches the badge as it reads on the page, e.g. "Beta 27" (only the number changes).
+              r'(<span id="kernel-drop-version" class="state now">Beta )[0-9]+(</span>)',
               lambda match: match[1] + os.environ["KERNEL_DROP_BUILD"] + match[2],
               page.read_text(encoding="utf-8"),
           )

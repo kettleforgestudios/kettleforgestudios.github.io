@@ -39,6 +39,10 @@
   .items { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); display: grid; gap: 14px; }
   .item p { font-size: 15px; }
   .item p.updated { font-size: 13px; color: var(--dim); margin-top: 4px; }
+  /* Item heading: title on the left, status tags to its right (they wrap under it on narrow screens) */
+  .item-head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin-bottom: 4px; }
+  .item-head .item-title { font-weight: 700; }
+  .item-head .state { margin: 0; }
   .state { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .08em;
     text-transform: uppercase; border-radius: 999px; padding: 2px 9px; margin-bottom: 5px; }
   .state.now { background: var(--gold); color: var(--bg); }
@@ -139,8 +143,8 @@ h2, h3 { font-family: "Bebas Neue", system-ui, sans-serif; font-weight: 400; let
   <section class="card">
     <div class="card-head center">
       <img class="app-icon" src="kernelcade-icon.png" alt="Kernelcade app icon" width="88" height="88">
-      <span class="pill">In development</span>
       <h2>Kernelcade</h2>
+      <span class="pill">Closed testing</span>
       <p class="blurb">A 2.5D retro game player for Android. Kernelcade pops classic 2D game
         worlds apart into layers of depth, with tilt and parallax you can feel.
         Bring your own game files to play, and enjoy our original games that come
@@ -194,20 +198,20 @@ h2, h3 { font-family: "Bebas Neue", system-ui, sans-serif; font-weight: 400; let
       </div>
       <div class="card-body items">
         <div class="item">
-          <span class="state now">Available</span> <span class="state dev">In development</span>
-          <p><a href="/husk-os/">Husk OS</a>: free, open-source operating system for ESP32-S3 boards.</p>
+          <div class="item-head"><a class="item-title" href="/husk-os/">Husk OS</a> <span class="state now">Available</span> <span class="state dev">In development</span></div>
+          <p>Free, open-source operating system for ESP32-S3 boards.</p>
           <!-- Change this date (and the one on /husk-os/) whenever a new Husk OS build is published. -->
           <p class="updated">Last updated <time datetime="2026-11-23">Nov 23, 2026</time> (Build 1)</p>
         </div>
         <div class="item">
-          <span class="state soon">Coming later</span>
-          <p><strong>Nibs</strong>, free add-on apps for Husk OS: <strong>CatEars.nib</strong>,
+          <div class="item-head"><a class="item-title" href="/husk-os/#nibs">Nibs</a> <span class="state soon">Coming later</span></div>
+          <p>Free add-on apps for Husk OS: <strong>CatEars.nib</strong>,
             which learns what your own cat's meows mean, plus <strong>Zombie story.nib</strong>
             and <strong>Weather.nib</strong>. <a href="/husk-os/#nibs">More</a></p>
         </div>
         <div class="item">
-          <span class="state soon">Coming to Google Play</span>
-          <p><a href="/ethagauge/"><strong>EthaGauge</strong></a>: an offline Android proof and
+          <div class="item-head"><a class="item-title" href="/ethagauge/">EthaGauge</a> <span class="state soon">Coming to Google Play</span></div>
+          <p>An offline Android proof and
             gallons calculator for ethanol plants and distillers. Free with no ads, plus an
             optional $0.99 unlock for records.</p>
         </div>
@@ -221,15 +225,15 @@ h2, h3 { font-family: "Bebas Neue", system-ui, sans-serif; font-weight: 400; let
       </div>
       <div class="card-body items">
         <div class="item">
-          <span class="state now">Available</span>
-          <p><a href="/qr">QR Code Generator</a>: free, offline, no ads. Make QR codes for
+          <div class="item-head"><a class="item-title" href="/qr">QR Code Generator</a> <span class="state now">Available</span></div>
+          <p>Free, offline, no ads. Make QR codes for
             links, text and Wi-Fi.</p>
           <!-- Change this date whenever the QR Code Generator (qr.html) changes. -->
           <p class="updated">Last updated <time datetime="2026-11-23">Nov 23, 2026</time></p>
         </div>
         <div class="item">
-          <span class="state now">Available</span>
-          <p><a href="/husk-os/#flash"><strong>Husk OS USB Flasher</strong></a>: install Build 1 on the Waveshare ESP32-S3-ePaper-1.54G V2 from a compatible browser.</p>
+          <div class="item-head"><a class="item-title" href="/husk-os/#flash">Husk OS USB Flasher</a> <span class="state now">Available</span></div>
+          <p>Install Build 1 on the Waveshare ESP32-S3-ePaper-1.54G V2 from a compatible browser.</p>
           <!-- Change this date whenever the USB flasher or its Husk OS build changes. -->
           <p class="updated">Last updated <time datetime="2026-11-23">Nov 23, 2026</time> (Build 1)</p>
         </div>

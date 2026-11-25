@@ -29,6 +29,10 @@
 .kf-card .card-head .blurb { color:#E9CFCB; font-style:italic; font-size:15px; margin:6px 0 0; }
 .kf-card .card-head .head-row { display:flex; align-items:center; gap:12px; }
 .kf-card .card-head .head-row img { width:40px; height:40px; flex:none; }
+/* Card title on the left, status tags to its right (they wrap under it on narrow screens) */
+.kf-card .card-head .title-tags { display:flex; flex-wrap:wrap; align-items:center; gap:4px 10px; }
+.kf-card .card-head .title-tags .state, .kf-card .card-head .head-row .state { margin:0; }
+.kf-card .card-head .head-row { flex-wrap:wrap; }
 .kf-card .card-body { padding:18px 24px 22px; background:#170A0C; }
 .kf-card .card-body > :last-child { margin-bottom:0; }
 
