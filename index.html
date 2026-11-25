@@ -38,6 +38,7 @@
   .blurb { color: var(--dim); font-size: 15px; font-style: italic; }
   .items { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); display: grid; gap: 14px; }
   .item p { font-size: 15px; }
+  .item p.updated { font-size: 13px; color: var(--dim); margin-top: 4px; }
   .state { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .08em;
     text-transform: uppercase; border-radius: 999px; padding: 2px 9px; margin-bottom: 5px; }
   .state.now { background: var(--gold); color: var(--bg); }
@@ -193,8 +194,10 @@ h2, h3 { font-family: "Bebas Neue", system-ui, sans-serif; font-weight: 400; let
       </div>
       <div class="card-body items">
         <div class="item">
-          <span class="state dev">In development</span>
+          <span class="state now">Available</span> <span class="state dev">In development</span>
           <p><a href="/husk-os/">Husk OS</a>: free operating system for ESP32-S3 boards.</p>
+          <!-- Change this date (and the one on /husk-os/) whenever a new Husk OS build is published. -->
+          <p class="updated">Last updated <time datetime="2026-11-23">Nov 23, 2026</time> (Build 1)</p>
         </div>
         <div class="item">
           <span class="state soon">Coming later</span>

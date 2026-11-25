@@ -43,3 +43,6 @@
 .kf-footer { margin-top:32px; padding-top:18px; border-top:1px solid var(--line); color:var(--dim); font-size:14px; text-align:center; }
 .kf-footer p { margin:4px 0; color:var(--dim); }
 .kf-footer a { color:var(--gold); }
+.status-line { margin:14px 0 0; }
+.status-line .state { margin:0 6px 0 0; }
+.status-line .updated { color:var(--dim); font-size:13px; white-space:nowrap; }
