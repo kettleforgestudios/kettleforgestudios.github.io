@@ -1,12 +1,14 @@
 # Keeps the browser Pocket / Pocket Color WebAssembly core (assets/play/pocket.{js,wasm})
-# in step with Kernelcade's latest release in CrazyLegsMalone/kernel-lesion-snes.
+# in step with Kernelcade's latest release in kettleforgestudios/kernelcade
+# (moved from CrazyLegsMalone/kernel-lesion-snes on Nov 26, 2026).
 #
 # Every Kernelcade build attaches pocket.js and pocket.wasm to its dev-N / build-N
-# release after passing its headless smoke test. Because kernel-lesion-snes is a
-# private repository, this workflow uses a read-only personal access token stored
-# as the repository secret KERNELCADE_READ_TOKEN (Fine-grained PAT on CrazyLegsMalone
-# with "Contents: Read-only" on kernel-lesion-snes). If that secret is not set yet,
-# the workflow exits cleanly without failing CI.
+# release after passing its headless smoke test. Because kernelcade is a private
+# repository, this workflow uses a read-only personal access token stored as the
+# repository secret KERNELCADE_READ_TOKEN: a fine-grained PAT with resource owner
+# "kettleforgestudios", repository access limited to kernelcade, and
+# "Contents: Read-only". If that secret is not set yet, the workflow exits cleanly
+# without failing CI.
 name: Sync Pocket Core
 
 on:
@@ -40,7 +42,7 @@ jobs:
             echo "skipped=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          REPO=CrazyLegsMalone/kernel-lesion-snes
+          REPO=kettleforgestudios/kernelcade
           TAG="$(gh release list -R "$REPO" --limit 20 --json tagName --jq '.[0].tagName')"
           if [ -z "$TAG" ]; then
             echo "::notice::No releases found in $REPO."
