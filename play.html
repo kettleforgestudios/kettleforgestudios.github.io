@@ -797,7 +797,7 @@
   }
   const seedRoom = new URLSearchParams(location.search).get('game') === 'seed-room';
   const BUILTIN_ROM_URL = seedRoom ? '/assets/play/seed-room.gbc' : '/assets/play/kernel-drop.gb';
-  const BUILTIN_ROM_NAME = seedRoom ? 'Seed Room' : 'Kernel Drop';
+  const BUILTIN_ROM_NAME = seedRoom ? 'Planting Puzzle' : 'Kernel Drop';
   document.getElementById('btnLoadBuiltIn').textContent = 'Play ' + BUILTIN_ROM_NAME;
   const DB_NAME = 'kettlecade_pocket_v1';
   const DB_VERSION = 1;

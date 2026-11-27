@@ -171,7 +171,7 @@ h2, h3 { font-family: "Bebas Neue", system-ui, sans-serif; font-weight: 400; let
             </div>
             <div class="classics-actions">
               <a class="classics-play" href="/play?game=seed-room" aria-label="Play Planting Puzzle in browser">Play in browser</a>
-              <a class="classics-download" href="/assets/play/seed-room.gbc" download aria-label="Download Planting Puzzle ROM">Download ROM</a>
+              <a class="classics-download" href="/assets/play/seed-room.gbc" download="planting-puzzle.gbc" aria-label="Download Planting Puzzle ROM">Download ROM</a>
             </div>
           </li>
           <li class="classics-game">
@@ -190,16 +190,16 @@ h2, h3 { font-family: "Bebas Neue", system-ui, sans-serif; font-weight: 400; let
   </section>
 
   <div class="grid">
-    <section class="card">
+    <section class="card" id="labs">
       <div class="card-head">
-        <div class="sub-head"><img src="assets/brand/labs-icon.svg" alt=""><h3><a href="/husk-os/">Kettle Forge Labs</a></h3></div>
+        <div class="sub-head"><img src="assets/brand/labs-icon.svg" alt=""><h3><a href="#labs">Kettle Forge Labs</a></h3></div>
       <p class="blurb">Software and experiments, from tiny
         microcontroller systems to whatever pops next.</p>
       </div>
       <div class="card-body items">
         <div class="item">
           <div class="item-head"><a class="item-title" href="/husk-os/">Husk OS</a> <span class="state now">Available</span> <span class="state dev">In development</span></div>
-          <p>Free, open-source operating system for ESP32-S3 boards.</p>
+          <p>Free operating system for the Waveshare ESP32-S3-ePaper-1.54G V2 board. Public source code is planned.</p>
           <!-- Change this date (and the one on /husk-os/) whenever a new Husk OS build is published. -->
           <p class="updated">Last updated <time datetime="2026-11-23">Nov 23, 2026</time> (Build 1)</p>
         </div>
