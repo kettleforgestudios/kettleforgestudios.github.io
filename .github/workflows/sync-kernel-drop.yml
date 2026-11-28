@@ -60,24 +60,30 @@ jobs:
           import os
           import re
           from pathlib import Path
-          page = Path("index.html")
-          updated, count = re.subn(
-              # Matches the badge as it reads on the page, e.g. "Beta 27" (only the number changes).
-              r'(<span id="kernel-drop-version" class="state now">Beta )[0-9]+(</span>)',
-              lambda match: match[1] + os.environ["KERNEL_DROP_BUILD"] + match[2],
-              page.read_text(encoding="utf-8"),
-          )
-          if count != 1:
-              raise SystemExit("Expected exactly one Kernel Drop build badge")
-          page.write_text(updated, encoding="utf-8")
+          # Versions are shown as 1.00, 1.01, 1.02 and so on: build 29 reads "1.29",
+          # build 100 reads "2.00".
+          build = int(os.environ["KERNEL_DROP_BUILD"])
+          version = f"{1 + build // 100}.{build % 100:02d}"
+          # The badge is shown on the home page and on the Kernelcade page.
+          for name in ("index.html", "kernelcade/index.html"):
+              page = Path(name)
+              updated, count = re.subn(
+                  # Matches the badge as it reads on the page, e.g. "Beta 1.27" (only the number changes).
+                  r'(<span id="kernel-drop-version" class="state now">Beta )[0-9]+[.][0-9]{2}(</span>)',
+                  lambda match: match[1] + version + match[2],
+                  page.read_text(encoding="utf-8"),
+              )
+              if count != 1:
+                  raise SystemExit(f"Expected exactly one Kernel Drop build badge in {name}")
+              page.write_text(updated, encoding="utf-8")
           PY
-          if git diff --quiet -- assets/play/kernel-drop.gb index.html; then
+          if git diff --quiet -- assets/play/kernel-drop.gb index.html kernelcade/index.html; then
             echo "Kernel Drop is already up to date."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/play/kernel-drop.gb index.html
+          git add assets/play/kernel-drop.gb index.html kernelcade/index.html
           git commit -m "Update Kernel Drop from kettle-classics"
           git push
           # Pushes made by this workflow don't start a Pages build on their own, so ask for one.

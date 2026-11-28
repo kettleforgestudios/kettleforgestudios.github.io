@@ -1,6 +1,6 @@
 {
   "name": "Husk OS — Waveshare ESP32-S3-ePaper-1.54G V2",
-  "version": "Build 1",
+  "version": "Build 1.01",
   "new_install_prompt_erase": false,
   "builds": [
     {
