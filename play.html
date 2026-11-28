@@ -795,9 +795,11 @@
   if (new URLSearchParams(location.search).get('game') === 'fields-of-silk') {
     location.replace('/play-nes');
   }
-  const seedRoom = new URLSearchParams(location.search).get('game') === 'seed-room';
-  const BUILTIN_ROM_URL = seedRoom ? '/assets/play/seed-room.gbc' : '/assets/play/kernel-drop.gb';
-  const BUILTIN_ROM_NAME = seedRoom ? 'Planting Puzzle' : 'Kernel Drop';
+  // 'seed-room' is Planting Puzzle's old link name, still accepted so old links keep working.
+  const gameParam = new URLSearchParams(location.search).get('game');
+  const plantingPuzzle = gameParam === 'planting-puzzle' || gameParam === 'seed-room';
+  const BUILTIN_ROM_URL = plantingPuzzle ? '/assets/play/planting-puzzle.gbc' : '/assets/play/kernel-drop.gb';
+  const BUILTIN_ROM_NAME = plantingPuzzle ? 'Planting Puzzle' : 'Kernel Drop';
   document.getElementById('btnLoadBuiltIn').textContent = 'Play ' + BUILTIN_ROM_NAME;
   const DB_NAME = 'kettlecade_pocket_v1';
   const DB_VERSION = 1;
